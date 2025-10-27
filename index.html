@@ -899,33 +899,19 @@
                 // Initialize world
                 initTiles();
                 
-                // Add player to database
-                const playerData = {
-                    name: playerName,
-                    color: playerColor,
-                    x: WORLD_SIZE / 2 + (Math.random() - 0.5) * 200,
-                    y: WORLD_SIZE / 2 + (Math.random() - 0.5) * 200,
-                    treesPlanted: 0,
-                    pollutionCleaned: 0,
-                    solarDeployed: 0,
-                    impact: 0,
-                    lastUpdate: Date.now()
-                };
+                console.log('Setting up Firebase listeners BEFORE adding self...');
                 
-                await gameRef.child('players').child(playerId).set(playerData);
-                
-                player = new Champion(playerId, playerData);
-                
-                // Set up presence system
-                const playerRef = gameRef.child('players').child(playerId);
-                playerRef.onDisconnect().remove();
-                
-                // Listen for other players
+                // Set up listeners for other players FIRST (before adding self)
                 gameRef.child('players').on('child_added', (snapshot) => {
                     const id = snapshot.key;
                     const data = snapshot.val();
+                    console.log('child_added event:', id, data.name);
+                    
                     if (id !== playerId) {
                         connectedPlayers[id] = new Champion(id, data);
+                        console.log('Added other player to connectedPlayers:', data.name);
+                    } else {
+                        console.log('Skipping self in child_added:', data.name);
                     }
                     // Always update list when any player is added
                     setTimeout(() => updatePlayersList(), 100);
@@ -948,9 +934,34 @@
                 
                 gameRef.child('players').on('child_removed', (snapshot) => {
                     const id = snapshot.key;
+                    console.log('Player disconnected:', id);
                     delete connectedPlayers[id];
                     updatePlayersList();
                 });
+                
+                console.log('Listeners set up. Now adding self to database...');
+                
+                // Add player to database
+                const playerData = {
+                    name: playerName,
+                    color: playerColor,
+                    x: WORLD_SIZE / 2 + (Math.random() - 0.5) * 200,
+                    y: WORLD_SIZE / 2 + (Math.random() - 0.5) * 200,
+                    treesPlanted: 0,
+                    pollutionCleaned: 0,
+                    solarDeployed: 0,
+                    impact: 0,
+                    lastUpdate: Date.now()
+                };
+                
+                await gameRef.child('players').child(playerId).set(playerData);
+                console.log('Self added to database:', playerName, playerId);
+                
+                player = new Champion(playerId, playerData);
+                
+                // Set up presence system
+                const playerRef = gameRef.child('players').child(playerId);
+                playerRef.onDisconnect().remove();
                 
                 // Listen for shared world state
                 gameRef.child('world/pollution').on('value', (snapshot) => {
