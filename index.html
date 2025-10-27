@@ -902,11 +902,29 @@
             document.getElementById('startButton').disabled = true;
             document.getElementById('startButton').textContent = 'Connecting...';
             
+            // Add timeout to prevent hanging
+            const timeout = setTimeout(() => {
+                console.error('⏰ Connection timeout!');
+                showStatus('⏰ Connection timeout! Please refresh and try again.', 'error');
+                document.getElementById('startButton').disabled = false;
+                document.getElementById('startButton').textContent = 'Join the Mission';
+            }, 10000);
+            
             try {
+                console.log('📡 Testing Firebase connection...');
+                
+                // Test Firebase connection first
+                await gameRef.child('test').set({ timestamp: Date.now() });
+                console.log('✅ Firebase connection successful!');
+                
+                clearTimeout(timeout);
+                
                 initWorld();
+                console.log('🌍 World initialized');
                 
                 // Generate player ID
                 playerId = 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                console.log('👤 Player ID generated:', playerId);
                 
                 // Create player
                 const spawnX = WORLD_SIZE / 2;
@@ -923,8 +941,10 @@
                     solarDeployed: 0,
                     impact: 0
                 });
+                console.log('👤 Player created:', player.name);
                 
                 // Add to Firebase
+                console.log('📤 Sending player data to Firebase...');
                 await gameRef.child('players').child(playerId).set({
                     name: player.name,
                     x: player.x,
@@ -936,8 +956,10 @@
                     impact: 0,
                     lastUpdate: Date.now()
                 });
+                console.log('✅ Player added to Firebase!');
                 
                 // Listen for other players
+                console.log('👥 Setting up player listener...');
                 gameRef.child('players').on('value', (snapshot) => {
                     connectedPlayers = {};
                     snapshot.forEach((child) => {
@@ -958,8 +980,10 @@
                     });
                     updatePlayersList();
                 });
+                console.log('✅ Player listener active!');
                 
                 // Listen for trees
+                console.log('🌳 Setting up tree listener...');
                 gameRef.child('world/trees').on('value', (snapshot) => {
                     trees = [];
                     snapshot.forEach((child) => {
@@ -968,6 +992,7 @@
                 });
                 
                 // Listen for pollution
+                console.log('🏭 Setting up pollution listener...');
                 gameRef.child('world/pollution').on('value', (snapshot) => {
                     pollution = [];
                     snapshot.forEach((child) => {
@@ -976,6 +1001,7 @@
                 });
                 
                 // Listen for solar panels
+                console.log('☀️ Setting up solar listener...');
                 gameRef.child('world/solar').on('value', (snapshot) => {
                     solarPanels = [];
                     snapshot.forEach((child) => {
@@ -984,14 +1010,17 @@
                 });
                 
                 // Listen for ecosystem health
+                console.log('💚 Setting up health listener...');
                 gameRef.child('world/health').on('value', (snapshot) => {
                     ecosystemHealth = snapshot.val() || 0;
                     if (ecosystemHealth >= 100) {
                         showStatus('🎉 VICTORY! 100% Ecosystem Health Achieved!', 'success');
                     }
                 });
+                console.log('✅ All world listeners active!');
                 
                 // Update position periodically
+                console.log('🔄 Setting up position updates...');
                 setInterval(async () => {
                     if (player && gameStarted) {
                         await gameRef.child('players').child(playerId).update({
@@ -1004,9 +1033,11 @@
                 
                 // Remove player on disconnect
                 gameRef.child('players').child(playerId).onDisconnect().remove();
+                console.log('🔌 Disconnect handler registered');
                 
                 // Start game
                 gameStarted = true;
+                console.log('🎮 Starting game interface...');
                 document.getElementById('startScreen').style.display = 'none';
                 document.getElementById('hud').style.display = 'block';
                 document.getElementById('health').style.display = 'block';
@@ -1015,18 +1046,24 @@
                 document.getElementById('instructionsBtn').style.display = 'block';
                 
                 // Start pollution spawning
+                console.log('🏭 Starting pollution spawning...');
                 startPollutionSpawning();
                 
+                console.log('✅ Starting game loop...');
                 gameLoop();
                 
+                console.log('🎉 Game fully initialized!');
                 showStatus('🌍 Welcome to Climate Champions!', 'success');
                 setTimeout(() => {
                     document.getElementById('statusMessage').style.display = 'none';
                 }, 3000);
                 
             } catch (error) {
-                console.error('Error initializing game:', error);
-                showStatus('❌ Connection failed! Check your internet and try again.', 'error');
+                clearTimeout(timeout);
+                console.error('❌ Error initializing game:', error);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+                showStatus('❌ Connection failed: ' + error.message, 'error');
                 document.getElementById('startButton').disabled = false;
                 document.getElementById('startButton').textContent = 'Join the Mission';
             }
