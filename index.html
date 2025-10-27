@@ -900,26 +900,51 @@
                 initTiles();
                 
                 console.log('Setting up Firebase listeners BEFORE adding self...');
+                console.log('My player ID will be:', playerId);
                 
-                // Set up listeners for other players FIRST (before adding self)
+                // First, check if we can READ existing players
+                try {
+                    const existingPlayersSnapshot = await gameRef.child('players').once('value');
+                    const existingPlayers = existingPlayersSnapshot.val();
+                    console.log('Existing players in database:', existingPlayers);
+                    
+                    if (existingPlayers) {
+                        console.log('Found', Object.keys(existingPlayers).length, 'existing players');
+                        // Manually add existing players to connectedPlayers
+                        for (let [id, data] of Object.entries(existingPlayers)) {
+                            console.log('Manually adding existing player:', id, data.name);
+                            connectedPlayers[id] = new Champion(id, data);
+                        }
+                    } else {
+                        console.log('No existing players in database');
+                    }
+                } catch (error) {
+                    console.error('Error reading existing players:', error);
+                }
+                
+                // Set up listeners for future changes
                 gameRef.child('players').on('child_added', (snapshot) => {
                     const id = snapshot.key;
                     const data = snapshot.val();
                     console.log('child_added event:', id, data.name);
                     
-                    if (id !== playerId) {
+                    // Only add if not already in connectedPlayers and not self
+                    if (id !== playerId && !connectedPlayers[id]) {
                         connectedPlayers[id] = new Champion(id, data);
-                        console.log('Added other player to connectedPlayers:', data.name);
-                    } else {
+                        console.log('Added NEW player to connectedPlayers:', data.name);
+                        updatePlayersList();
+                    } else if (id === playerId) {
                         console.log('Skipping self in child_added:', data.name);
+                    } else {
+                        console.log('Player already exists in connectedPlayers:', data.name);
                     }
-                    // Always update list when any player is added
-                    setTimeout(() => updatePlayersList(), 100);
                 });
                 
                 gameRef.child('players').on('child_changed', (snapshot) => {
                     const id = snapshot.key;
                     const data = snapshot.val();
+                    console.log('child_changed event:', id, data.name);
+                    
                     if (id === playerId) {
                         // Update our own player data
                         player.impact = data.impact;
@@ -1054,29 +1079,50 @@
         
         // Update players list
         function updatePlayersList() {
+            console.log('=== updatePlayersList called ===');
+            console.log('playerId:', playerId);
+            console.log('player:', player);
+            console.log('connectedPlayers:', connectedPlayers);
+            console.log('connectedPlayers keys:', Object.keys(connectedPlayers));
+            
             const listEl = document.getElementById('playersList');
             
             if (!listEl) {
+                console.error('ERROR: playersList element not found!');
                 return;
             }
+            
+            console.log('playersList element found:', listEl);
             
             listEl.innerHTML = '';
             
             // Make sure we have a player before trying to show the list
             if (!player) {
+                console.log('No player yet, showing waiting message');
                 listEl.innerHTML = '<div style="text-align: center; color: #ccc; padding: 10px;">Waiting for player...</div>';
                 return;
             }
             
             const allPlayers = [player, ...Object.values(connectedPlayers)]
-                .filter(p => p && p.name) // Make sure player exists and has a name
-                .sort((a, b) => (b.impact || 0) - (a.impact || 0));
+                .filter(p => p && p.name); // Make sure player exists and has a name
+            
+            console.log('All players array:', allPlayers);
+            console.log('Total players to display:', allPlayers.length);
+            
+            allPlayers.forEach(p => {
+                console.log('Player:', p.id, p.name, 'Impact:', p.impact);
+            });
             
             if (allPlayers.length === 0) {
+                console.log('No players to display!');
                 listEl.innerHTML = '<div style="text-align: center; color: #666; padding: 10px;">Loading...</div>';
                 return;
             }
             
+            // Sort by impact
+            allPlayers.sort((a, b) => (b.impact || 0) - (a.impact || 0));
+            
+            console.log('Creating player entries...');
             allPlayers.forEach(p => {
                 const entry = document.createElement('div');
                 entry.className = 'player-entry' + (p.id === playerId ? ' you' : '');
@@ -1085,7 +1131,11 @@
                     <span>${p.impact || 0}</span>
                 `;
                 listEl.appendChild(entry);
+                console.log('Added entry for:', p.name);
             });
+            
+            console.log('Final HTML:', listEl.innerHTML);
+            console.log('=== updatePlayersList complete ===');
         }
         
         // Perform action
