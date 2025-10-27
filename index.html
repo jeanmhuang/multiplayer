@@ -170,6 +170,24 @@
             margin: 6px 0;
         }
         
+        .toggle-setup {
+            margin-top: 15px;
+            padding: 12px 24px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .toggle-setup:hover {
+            background: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+        
         #hud {
             position: absolute;
             top: 20px;
@@ -339,6 +357,7 @@
             align-items: center;
             gap: 5px;
             min-width: 120px;
+            background-color: transparent;
         }
         
         .action-button:hover {
@@ -385,6 +404,7 @@
             font-weight: bold;
             transition: all 0.2s;
             backdrop-filter: blur(10px);
+            font-size: 14px;
         }
         
         #instructionsBtn:hover {
@@ -393,7 +413,7 @@
         }
         
         #instructionsModal {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -508,7 +528,7 @@
         
         <input type="text" id="nameInput" placeholder="Enter Champion Name" maxlength="12">
         <button id="startButton">JOIN GAME</button>
-        <button class="toggle-setup" style="margin-top: 15px;" onclick="showInstructions()">📖 HOW TO PLAY</button>
+        <button class="toggle-setup" onclick="showInstructions()">📖 HOW TO PLAY</button>
         
         <div id="statusMessage" style="display: none;"></div>
         
@@ -554,21 +574,21 @@
     </div>
     
     <div id="actions" style="display: none;">
-        <div class="action-button tree" onclick="performActionFromButton('tree')">
+        <button class="action-button tree" id="treeBtn">
             <span class="action-icon">🌳</span>
             <span class="action-label">PLANT (1)</span>
-        </div>
-        <div class="action-button cleanup" onclick="performActionFromButton('cleanup')">
+        </button>
+        <button class="action-button cleanup" id="cleanupBtn">
             <span class="action-icon">🧹</span>
             <span class="action-label">CLEAN (2)</span>
-        </div>
-        <div class="action-button solar" onclick="performActionFromButton('solar')">
+        </button>
+        <button class="action-button solar" id="solarBtn">
             <span class="action-icon">☀️</span>
             <span class="action-label">SOLAR (3)</span>
-        </div>
+        </button>
     </div>
     
-    <button id="instructionsBtn" style="display: none;" onclick="showInstructions()">📖 HOW TO PLAY</button>
+    <button id="instructionsBtn" style="display: none;">📖 HOW TO PLAY</button>
     
     <div id="instructionsModal">
         <div class="instructions-content">
@@ -629,11 +649,82 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <!-- Firebase SDK - Updated to latest stable version -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <script>
+        // Show status message - defined globally
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('statusMessage');
+            if (!statusEl) return;
+            statusEl.textContent = message;
+            statusEl.className = 'status-message';
+            if (type === 'error') statusEl.classList.add('error-message');
+            if (type === 'success') statusEl.classList.add('success-message');
+            statusEl.style.display = 'block';
+        }
+        
+        // Show/hide instructions - defined globally
+        function showInstructions() {
+            document.getElementById('instructionsModal').style.display = 'flex';
+        }
+        
+        function hideInstructions() {
+            document.getElementById('instructionsModal').style.display = 'none';
+        }
+        
+        let retryCount = 0;
+        const maxRetries = 10;
+        
+        // Wait for Firebase to load
+        window.addEventListener('load', function() {
+            console.log('Page loaded, checking for Firebase...');
+            initializeApp();
+        });
+        
+        function initializeApp() {
+            retryCount++;
+            
+            // Check if Firebase loaded
+            if (typeof firebase === 'undefined') {
+                console.error(`Firebase not loaded yet. Attempt ${retryCount}/${maxRetries}`);
+                
+                if (retryCount >= maxRetries) {
+                    const errorMsg = document.getElementById('statusMessage');
+                    errorMsg.innerHTML = `
+                        <strong>⚠️ Firebase Failed to Load</strong><br><br>
+                        <strong>Troubleshooting:</strong><br>
+                        1. Check your internet connection<br>
+                        2. Disable ad blockers (they often block Firebase)<br>
+                        3. Try a different browser<br>
+                        4. Check if firewall is blocking Google CDN<br>
+                        5. Press Ctrl+Shift+R (or Cmd+Shift+R) to hard refresh<br><br>
+                        <strong>Still not working?</strong> Open browser console (F12) to see detailed errors.
+                    `;
+                    errorMsg.className = 'status-message error-message';
+                    errorMsg.style.display = 'block';
+                    console.error('Firebase failed to load after ' + maxRetries + ' attempts.');
+                    console.error('Possible causes:');
+                    console.error('1) Ad blocker blocking Firebase CDN');
+                    console.error('2) Firewall blocking googleapis.com or gstatic.com');
+                    console.error('3) No internet connection');
+                    console.error('4) Browser extension interfering');
+                    return;
+                }
+                
+                showStatus(`Loading Firebase... (${retryCount}/${maxRetries})`, 'info');
+                setTimeout(initializeApp, 500);
+                return;
+            }
+            
+            console.log('✓ Firebase loaded successfully!');
+            showStatus('', 'success');
+            document.getElementById('statusMessage').style.display = 'none';
+            setupGame();
+        }
+        
+        function setupGame() {
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
@@ -652,9 +743,17 @@
         };
         
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const gameRef = database.ref('game');
+        let database, gameRef;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            gameRef = database.ref('game');
+            console.log('Firebase initialized successfully!');
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+            showStatus('Firebase connection failed: ' + error.message, 'error');
+            return;
+        }
         
         // Firebase and multiplayer state
         let playerId = null;
@@ -691,16 +790,6 @@
         };
         
         const PLAYER_COLORS = ['#4ade80', '#10b981', '#059669', '#84cc16', '#22d3ee', '#06b6d4', '#8b5cf6', '#a855f7'];
-        
-        // Show status message
-        function showStatus(message, type = 'info') {
-            const statusEl = document.getElementById('statusMessage');
-            statusEl.textContent = message;
-            statusEl.className = 'status-message';
-            if (type === 'error') statusEl.classList.add('error-message');
-            if (type === 'success') statusEl.classList.add('success-message');
-            statusEl.style.display = 'block';
-        }
         
         // Champion class
         class Champion {
@@ -933,33 +1022,6 @@
             });
         }
         
-        // Set action
-        function setAction(action) {
-            currentAction = action;
-            document.querySelectorAll('.action-button').forEach(btn => {
-                btn.style.opacity = '0.6';
-            });
-            if (action === 'tree') document.querySelector('.action-button.tree').style.opacity = '1';
-            else if (action === 'cleanup') document.querySelector('.action-button.cleanup').style.opacity = '1';
-            else if (action === 'solar') document.querySelector('.action-button.solar').style.opacity = '1';
-        }
-        
-        // Perform action from button click
-        function performActionFromButton(action) {
-            setAction(action);
-            performAction(action);
-        }
-        
-        // Show instructions
-        function showInstructions() {
-            document.getElementById('instructionsModal').style.display = 'flex';
-        }
-        
-        // Hide instructions
-        function hideInstructions() {
-            document.getElementById('instructionsModal').style.display = 'none';
-        }
-        
         // Perform action
         async function performAction(action) {
             if (!player || !database) return;
@@ -1146,18 +1208,19 @@
             }
             
             if (e.key === '1' || e.key === 't' || e.key === 'T') {
-                setAction('tree');
                 performAction('tree');
             } else if (e.key === '2' || e.key === 'c' || e.key === 'C') {
-                setAction('cleanup');
                 performAction('cleanup');
             } else if (e.key === '3' || e.key === 's' || e.key === 'S') {
-                setAction('solar');
                 performAction('solar');
             } else if (e.key === ' ') {
                 e.preventDefault();
                 performAction(currentAction);
             }
+        });
+        
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
         });
         
         // Close instructions when clicking outside
@@ -1167,17 +1230,20 @@
             }
         });
         
-        window.addEventListener('keyup', (e) => {
-            keys[e.key] = false;
-        });
+        // Button event listeners
+        document.getElementById('treeBtn').addEventListener('click', () => performAction('tree'));
+        document.getElementById('cleanupBtn').addEventListener('click', () => performAction('cleanup'));
+        document.getElementById('solarBtn').addEventListener('click', () => performAction('solar'));
+        document.getElementById('instructionsBtn').addEventListener('click', showInstructions);
         
         document.getElementById('startButton').addEventListener('click', init);
         document.getElementById('nameInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') init();
         });
         
-        setAction('tree');
         document.getElementById('nameInput').focus();
+        
+        } // End of setupGame function
     </script>
 </body>
 </html>
