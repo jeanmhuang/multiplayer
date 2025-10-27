@@ -906,15 +906,27 @@
                 
                 if (!exists) {
                     const pollutionId = `pollution_${gridX}_${gridY}_${Date.now()}`;
-                    newPollution.push({ x, y, gridX, gridY, id: pollutionId });
+                    newPollution.push({ 
+                        x, 
+                        y, 
+                        gridX, 
+                        gridY, 
+                        id: pollutionId 
+                    });
                 }
             }
             
             // Add to Firebase
             if (newPollution.length > 0) {
                 for (const p of newPollution) {
-                    await gameRef.child('world/pollution').child(p.id).set(p);
+                    await gameRef.child('world/pollution').child(p.id).set({
+                        x: p.x,
+                        y: p.y,
+                        gridX: p.gridX,
+                        gridY: p.gridY
+                    });
                 }
+                console.log('Spawned', newPollution.length, 'pollution spots');
                 showPollutionAlert(newPollution.length);
             }
         }
@@ -1048,7 +1060,11 @@
                 gameRef.child('world/pollution').on('value', (snapshot) => {
                     const data = snapshot.val();
                     if (data) {
-                        pollution = Object.values(data);
+                        pollution = Object.entries(data).map(([id, p]) => ({
+                            ...p,
+                            id: id  // Ensure ID is preserved
+                        }));
+                        console.log('Loaded pollution:', pollution.length, 'spots');
                     } else {
                         pollution = [];
                     }
@@ -1057,7 +1073,10 @@
                 gameRef.child('world/trees').on('value', (snapshot) => {
                     const data = snapshot.val();
                     if (data) {
-                        trees = Object.values(data);
+                        trees = Object.entries(data).map(([id, t]) => ({
+                            ...t,
+                            id: id
+                        }));
                     } else {
                         trees = [];
                     }
@@ -1066,7 +1085,10 @@
                 gameRef.child('world/solar').on('value', (snapshot) => {
                     const data = snapshot.val();
                     if (data) {
-                        solarPanels = Object.values(data);
+                        solarPanels = Object.entries(data).map(([id, s]) => ({
+                            ...s,
+                            id: id
+                        }));
                     } else {
                         solarPanels = [];
                     }
@@ -1142,8 +1164,24 @@
                 });
                 
                 if (pollutionHere) {
+                    console.log('Found pollution to clean:', pollutionHere);
+                    console.log('Pollution ID:', pollutionHere.id);
+                    
+                    // Check if pollution still exists in Firebase before removing
                     try {
+                        const pollutionSnapshot = await gameRef.child('world/pollution').child(pollutionHere.id).once('value');
+                        
+                        if (!pollutionSnapshot.exists()) {
+                            console.log('Pollution already cleaned by another player');
+                            showStatus('💨 Already cleaned!', 'info');
+                            setTimeout(() => {
+                                document.getElementById('statusMessage').style.display = 'none';
+                            }, 1500);
+                            return;
+                        }
+                        
                         await gameRef.child('world/pollution').child(pollutionHere.id).remove();
+                        console.log('Successfully removed pollution from Firebase');
                         
                         player.pollutionCleaned++;
                         player.impact += 15;
@@ -1162,11 +1200,15 @@
                         updatePlayersList();
                     } catch (error) {
                         console.error('Error cleaning pollution:', error);
-                        showStatus('🚫 Error cleaning pollution!', 'error');
+                        console.error('Error details:', error.message);
+                        console.error('Pollution object:', pollutionHere);
+                        showStatus('🚫 Error: ' + error.message, 'error');
                         setTimeout(() => {
                             document.getElementById('statusMessage').style.display = 'none';
-                        }, 2000);
+                        }, 3000);
                     }
+                } else {
+                    console.log('No pollution found at this location');
                 }
                 
             } else if (action === 'tree') {
