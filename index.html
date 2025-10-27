@@ -541,6 +541,7 @@
             <div>🌳 <strong>Press T or 1</strong> (or click button) - Plant Tree</div>
             <div>🧹 <strong>Press C or 2</strong> (or click button) - Clean Pollution</div>
             <div>☀️ <strong>Press S or 3</strong> (or click button) - Deploy Solar</div>
+            <div>🖱️ <strong>Double-Click</strong> - Remove tree or solar panel</div>
         </div>
     </div>
     
@@ -645,11 +646,21 @@
             </div>
             
             <div class="instructions-section">
+                <h3>🗑️ REMOVING ITEMS</h3>
+                <div class="control-item">
+                    <div class="control-key">DOUBLE-CLICK</div>
+                    <div class="control-desc">Remove any tree or solar panel by double-clicking on it. Perfect for fixing mistakes or clearing items placed on water!</div>
+                </div>
+                <p style="margin-top: 10px; color: #93c5fd;">Note: You can remove ANY tree or solar panel, even ones placed by other players.</p>
+            </div>
+            
+            <div class="instructions-section">
                 <h3>📊 GAMEPLAY TIPS</h3>
                 <p><strong>🧹 Clean Pollution First:</strong> Gives the most impact points and ecosystem health boost.</p>
                 <p><strong>🌳 Plant Trees Strategically:</strong> Trees can't overlap - spread them out. Trees can only be planted on land (not water!).</p>
                 <p><strong>☀️ Solar Panels:</strong> Place on land tiles only (not water or where trees already exist).</p>
                 <p><strong>💧 Water Tiles:</strong> The blue squares are water - you can't build on them, but you can clean pollution from them!</p>
+                <p><strong>🖱️ Double-Click to Remove:</strong> Made a mistake? Double-click any tree or solar panel to remove it!</p>
                 <p><strong>🏆 Compete & Cooperate:</strong> Race to the top of the leaderboard while helping heal the planet together!</p>
                 <p><strong>👥 Multiplayer:</strong> You'll see other players in real-time. Their actions affect the shared world!</p>
             </div>
@@ -1329,6 +1340,90 @@
             if (e.target.id === 'instructionsModal') {
                 hideInstructions();
             }
+        });
+        
+        // Double-click to remove trees and solar panels
+        canvas.addEventListener('dblclick', async (e) => {
+            if (!gameStarted || !player) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left + camera.x;
+            const clickY = e.clientY - rect.top + camera.y;
+            
+            // Check if clicked on a tree
+            for (let tree of trees) {
+                const distance = Math.hypot(tree.x - clickX, tree.y - clickY);
+                if (distance < 20) {
+                    // Remove tree from database
+                    const treeSnapshot = await gameRef.child('world/trees').once('value');
+                    const treeData = treeSnapshot.val() || {};
+                    
+                    for (let [key, value] of Object.entries(treeData)) {
+                        if (Math.abs(value.x - tree.x) < 1 && Math.abs(value.y - tree.y) < 1) {
+                            await gameRef.child('world/trees').child(key).remove();
+                            showStatus('🌳 Tree removed!', 'success');
+                            setTimeout(() => {
+                                document.getElementById('statusMessage').style.display = 'none';
+                            }, 2000);
+                            return;
+                        }
+                    }
+                }
+            }
+            
+            // Check if clicked on a solar panel
+            for (let solar of solarPanels) {
+                const distance = Math.hypot(solar.x - clickX, solar.y - clickY);
+                if (distance < 20) {
+                    // Remove solar panel from database
+                    const solarSnapshot = await gameRef.child('world/solar').once('value');
+                    const solarData = solarSnapshot.val() || {};
+                    
+                    for (let [key, value] of Object.entries(solarData)) {
+                        if (Math.abs(value.x - solar.x) < 1 && Math.abs(value.y - solar.y) < 1) {
+                            await gameRef.child('world/solar').child(key).remove();
+                            showStatus('☀️ Solar panel removed!', 'success');
+                            setTimeout(() => {
+                                document.getElementById('statusMessage').style.display = 'none';
+                            }, 2000);
+                            return;
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Change cursor when hovering over removable items
+        canvas.addEventListener('mousemove', (e) => {
+            if (!gameStarted || !player) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left + camera.x;
+            const mouseY = e.clientY - rect.top + camera.y;
+            
+            let overRemovableItem = false;
+            
+            // Check if hovering over a tree
+            for (let tree of trees) {
+                const distance = Math.hypot(tree.x - mouseX, tree.y - mouseY);
+                if (distance < 20) {
+                    overRemovableItem = true;
+                    break;
+                }
+            }
+            
+            // Check if hovering over a solar panel
+            if (!overRemovableItem) {
+                for (let solar of solarPanels) {
+                    const distance = Math.hypot(solar.x - mouseX, solar.y - mouseY);
+                    if (distance < 20) {
+                        overRemovableItem = true;
+                        break;
+                    }
+                }
+            }
+            
+            canvas.style.cursor = overRemovableItem ? 'pointer' : 'default';
         });
         
         // Button event listeners
