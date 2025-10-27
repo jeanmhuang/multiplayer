@@ -138,25 +138,31 @@
         }
         
         .status-message {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(251, 191, 36, 0.2);
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3000;
+            padding: 15px 30px;
+            background: rgba(251, 191, 36, 0.95);
             border: 2px solid #fbbf24;
             border-radius: 8px;
-            color: #fbbf24;
+            color: #000;
             font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         
         .error-message {
-            background: rgba(239, 68, 68, 0.2);
+            background: rgba(239, 68, 68, 0.95);
             border-color: #ef4444;
-            color: #ef4444;
+            color: white;
         }
         
         .success-message {
-            background: rgba(74, 222, 128, 0.2);
+            background: rgba(74, 222, 128, 0.95);
             border-color: #4ade80;
-            color: #4ade80;
+            color: black;
         }
         
         .controls {
@@ -530,13 +536,11 @@
         <button id="startButton">JOIN GAME</button>
         <button class="toggle-setup" onclick="showInstructions()">📖 HOW TO PLAY</button>
         
-        <div id="statusMessage" style="display: none;"></div>
-        
         <div class="controls">
-            <div>🎮 <strong>WASD / Arrow Keys</strong> - Move</div>
-            <div>🌳 <strong>1 or T</strong> - Plant Tree</div>
-            <div>🧹 <strong>2 or C</strong> - Clean Pollution</div>
-            <div>☀️ <strong>3 or S</strong> - Deploy Solar Panel</div>
+            <div>🎮 <strong>WASD / Arrow Keys</strong> - Move your champion</div>
+            <div>🌳 <strong>Press T or 1</strong> (or click button) - Plant Tree</div>
+            <div>🧹 <strong>Press C or 2</strong> (or click button) - Clean Pollution</div>
+            <div>☀️ <strong>Press S or 3</strong> (or click button) - Deploy Solar</div>
         </div>
     </div>
     
@@ -576,19 +580,21 @@
     <div id="actions" style="display: none;">
         <button class="action-button tree" id="treeBtn">
             <span class="action-icon">🌳</span>
-            <span class="action-label">PLANT (1)</span>
+            <span class="action-label">TREE (T or 1)</span>
         </button>
         <button class="action-button cleanup" id="cleanupBtn">
             <span class="action-icon">🧹</span>
-            <span class="action-label">CLEAN (2)</span>
+            <span class="action-label">CLEAN (C or 2)</span>
         </button>
         <button class="action-button solar" id="solarBtn">
             <span class="action-icon">☀️</span>
-            <span class="action-label">SOLAR (3)</span>
+            <span class="action-label">SOLAR (S or 3)</span>
         </button>
     </div>
     
     <button id="instructionsBtn" style="display: none;">📖 HOW TO PLAY</button>
+    
+    <div id="statusMessage" style="display: none;"></div>
     
     <div id="instructionsModal">
         <div class="instructions-content">
@@ -612,30 +618,38 @@
             </div>
             
             <div class="instructions-section">
-                <h3>🌱 ACTIONS</h3>
+                <h3>🌱 ACTIONS (Choose One Method)</h3>
+                <p style="margin-bottom: 15px;"><strong>You can perform actions in TWO ways - pick whichever you prefer:</strong></p>
+                
+                <p><strong>Method 1: Keyboard Shortcuts</strong></p>
                 <div class="control-item">
-                    <div class="control-key">1 or T</div>
+                    <div class="control-key">T or 1</div>
                     <div class="control-desc">🌳 <strong>Plant Tree</strong> - Absorbs CO₂ and restores forests (+10 impact, +0.5% health)</div>
                 </div>
                 <div class="control-item">
-                    <div class="control-key">2 or C</div>
+                    <div class="control-key">C or 2</div>
                     <div class="control-desc">🧹 <strong>Clean Pollution</strong> - Remove pollution from land and water (+15 impact, +0.8% health)</div>
                 </div>
                 <div class="control-item">
-                    <div class="control-key">3 or S</div>
+                    <div class="control-key">S or 3</div>
                     <div class="control-desc">☀️ <strong>Deploy Solar Panel</strong> - Generate renewable energy (+8 impact, +0.4% health)</div>
                 </div>
+                
+                <p style="margin-top: 15px;"><strong>Method 2: Click Buttons</strong></p>
                 <div class="control-item">
                     <div class="control-key">CLICK</div>
-                    <div class="control-desc">Click the action buttons at the bottom to perform actions</div>
+                    <div class="control-desc">Click the action buttons at the bottom of the screen to perform actions</div>
                 </div>
+                
+                <p style="margin-top: 15px; font-style: italic; color: #93c5fd;">💡 Tip: Walk to where you want to perform the action, then either press the key or click the button!</p>
             </div>
             
             <div class="instructions-section">
                 <h3>📊 GAMEPLAY TIPS</h3>
                 <p><strong>🧹 Clean Pollution First:</strong> Gives the most impact points and ecosystem health boost.</p>
-                <p><strong>🌳 Plant Trees Strategically:</strong> Trees can't overlap - spread them out across the map.</p>
-                <p><strong>☀️ Solar Panels:</strong> Can be placed on most land tiles but not in water or forests.</p>
+                <p><strong>🌳 Plant Trees Strategically:</strong> Trees can't overlap - spread them out. Trees can only be planted on land (not water!).</p>
+                <p><strong>☀️ Solar Panels:</strong> Place on land tiles only (not water or where trees already exist).</p>
+                <p><strong>💧 Water Tiles:</strong> The blue squares are water - you can't build on them, but you can clean pollution from them!</p>
                 <p><strong>🏆 Compete & Cooperate:</strong> Race to the top of the leaderboard while helping heal the planet together!</p>
                 <p><strong>👥 Multiplayer:</strong> You'll see other players in real-time. Their actions affect the shared world!</p>
             </div>
@@ -896,6 +910,9 @@
                 
                 player = new Champion(playerId, playerData);
                 
+                console.log('Player created:', player.name, 'with ID:', playerId);
+                console.log('Player impact:', player.impact);
+                
                 // Set up presence system
                 const playerRef = gameRef.child('players').child(playerId);
                 playerRef.onDisconnect().remove();
@@ -979,8 +996,14 @@
                 
                 showStatus('Connected!', 'success');
                 
+                // Update player list immediately to show current player
+                updatePlayersList();
+                
                 // Start sending position updates
                 setInterval(updatePlayerPosition, 50);
+                
+                // Update player list every second to keep it fresh
+                setInterval(updatePlayersList, 1000);
                 
                 gameLoop();
             } catch (error) {
@@ -1003,22 +1026,35 @@
         // Update players list
         function updatePlayersList() {
             const listEl = document.getElementById('playersList');
+            if (!listEl) return;
+            
             listEl.innerHTML = '';
             
+            // Make sure we have a player before trying to show the list
+            if (!player) {
+                console.log('updatePlayersList: No player yet');
+                return;
+            }
+            
             const allPlayers = [player, ...Object.values(connectedPlayers)]
-                .filter(p => p)
-                .sort((a, b) => (b?.impact || 0) - (a?.impact || 0));
+                .filter(p => p && p.name) // Make sure player exists and has a name
+                .sort((a, b) => (b.impact || 0) - (a.impact || 0));
+            
+            console.log('Updating player list. Total players:', allPlayers.length);
+            
+            if (allPlayers.length === 0) {
+                listEl.innerHTML = '<div style="text-align: center; color: #666; padding: 10px;">Loading...</div>';
+                return;
+            }
             
             allPlayers.forEach(p => {
-                if (p) {
-                    const entry = document.createElement('div');
-                    entry.className = 'player-entry' + (p.id === playerId ? ' you' : '');
-                    entry.innerHTML = `
-                        <span><span class="player-status"></span>${p.name}</span>
-                        <span>${p.impact || 0}</span>
-                    `;
-                    listEl.appendChild(entry);
-                }
+                const entry = document.createElement('div');
+                entry.className = 'player-entry' + (p.id === playerId ? ' you' : '');
+                entry.innerHTML = `
+                    <span><span class="player-status"></span>${p.name}</span>
+                    <span>${p.impact || 0}</span>
+                `;
+                listEl.appendChild(entry);
             });
         }
         
@@ -1028,8 +1064,20 @@
             
             const gridX = Math.floor(player.x / TILE_SIZE);
             const gridY = Math.floor(player.y / TILE_SIZE);
+            const tile = getTile(gridX, gridY);
+            
+            if (!tile) return;
             
             if (action === 'tree') {
+                // Can't plant trees on water
+                if (tile.type === 'water' || tile.type === 'polluted_water') {
+                    showStatus('🚫 Cannot plant trees on water!', 'error');
+                    setTimeout(() => {
+                        document.getElementById('statusMessage').style.display = 'none';
+                    }, 2000);
+                    return;
+                }
+                
                 const treeId = `tree_${gridX}_${gridY}`;
                 const exists = trees.some(t => t.gridX === gridX && t.gridY === gridY);
                 if (!exists) {
@@ -1049,6 +1097,14 @@
                     
                     const newHealth = Math.min(100, ecosystemHealth + 0.5);
                     await gameRef.child('world/health').set(newHealth);
+                    
+                    // Update leaderboard immediately
+                    updatePlayersList();
+                } else {
+                    showStatus('🚫 Tree already planted here!', 'error');
+                    setTimeout(() => {
+                        document.getElementById('statusMessage').style.display = 'none';
+                    }, 2000);
                 }
             } else if (action === 'cleanup') {
                 for (let p of pollution) {
@@ -1073,12 +1129,41 @@
                         
                         const newHealth = Math.min(100, ecosystemHealth + 0.8);
                         await gameRef.child('world/health').set(newHealth);
-                        break;
+                        
+                        // Update leaderboard immediately
+                        updatePlayersList();
+                        return;
                     }
                 }
+                
+                // No pollution nearby
+                showStatus('🚫 No pollution nearby to clean!', 'error');
+                setTimeout(() => {
+                    document.getElementById('statusMessage').style.display = 'none';
+                }, 2000);
+                
             } else if (action === 'solar') {
+                // Can't place solar panels on water
+                if (tile.type === 'water' || tile.type === 'polluted_water') {
+                    showStatus('🚫 Cannot place solar panels on water!', 'error');
+                    setTimeout(() => {
+                        document.getElementById('statusMessage').style.display = 'none';
+                    }, 2000);
+                    return;
+                }
+                
                 const solarId = `solar_${gridX}_${gridY}`;
                 const exists = solarPanels.some(s => s.gridX === gridX && s.gridY === gridY);
+                const treeExists = trees.some(t => t.gridX === gridX && t.gridY === gridY);
+                
+                if (treeExists) {
+                    showStatus('🚫 Cannot place solar panel on a tree!', 'error');
+                    setTimeout(() => {
+                        document.getElementById('statusMessage').style.display = 'none';
+                    }, 2000);
+                    return;
+                }
+                
                 if (!exists) {
                     await gameRef.child('world/solar').child(solarId).set({
                         x: gridX * TILE_SIZE + TILE_SIZE/2,
@@ -1095,6 +1180,14 @@
                     
                     const newHealth = Math.min(100, ecosystemHealth + 0.4);
                     await gameRef.child('world/health').set(newHealth);
+                    
+                    // Update leaderboard immediately
+                    updatePlayersList();
+                } else {
+                    showStatus('🚫 Solar panel already placed here!', 'error');
+                    setTimeout(() => {
+                        document.getElementById('statusMessage').style.display = 'none';
+                    }, 2000);
                 }
             }
         }
