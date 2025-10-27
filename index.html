@@ -693,7 +693,6 @@
         
         // Wait for Firebase to load
         window.addEventListener('load', function() {
-            console.log('Page loaded, checking for Firebase...');
             initializeApp();
         });
         
@@ -702,8 +701,6 @@
             
             // Check if Firebase loaded
             if (typeof firebase === 'undefined') {
-                console.error(`Firebase not loaded yet. Attempt ${retryCount}/${maxRetries}`);
-                
                 if (retryCount >= maxRetries) {
                     const errorMsg = document.getElementById('statusMessage');
                     errorMsg.innerHTML = `
@@ -732,7 +729,6 @@
                 return;
             }
             
-            console.log('✓ Firebase loaded successfully!');
             showStatus('', 'success');
             document.getElementById('statusMessage').style.display = 'none';
             setupGame();
@@ -762,7 +758,6 @@
             firebase.initializeApp(firebaseConfig);
             database = firebase.database();
             gameRef = database.ref('game');
-            console.log('Firebase initialized successfully!');
         } catch (error) {
             console.error('Firebase initialization error:', error);
             showStatus('Firebase connection failed: ' + error.message, 'error');
@@ -910,9 +905,6 @@
                 
                 player = new Champion(playerId, playerData);
                 
-                console.log('Player created:', player.name, 'with ID:', playerId);
-                console.log('Player impact:', player.impact);
-                
                 // Set up presence system
                 const playerRef = gameRef.child('players').child(playerId);
                 playerRef.onDisconnect().remove();
@@ -924,15 +916,23 @@
                     if (id !== playerId) {
                         connectedPlayers[id] = new Champion(id, data);
                     }
-                    updatePlayersList();
+                    // Always update list when any player is added
+                    setTimeout(() => updatePlayersList(), 100);
                 });
                 
                 gameRef.child('players').on('child_changed', (snapshot) => {
                     const id = snapshot.key;
                     const data = snapshot.val();
-                    if (id !== playerId && connectedPlayers[id]) {
+                    if (id === playerId) {
+                        // Update our own player data
+                        player.impact = data.impact;
+                        player.treesPlanted = data.treesPlanted;
+                        player.pollutionCleaned = data.pollutionCleaned;
+                        player.solarDeployed = data.solarDeployed;
+                    } else if (connectedPlayers[id]) {
                         connectedPlayers[id] = new Champion(id, data);
                     }
+                    updatePlayersList();
                 });
                 
                 gameRef.child('players').on('child_removed', (snapshot) => {
@@ -995,9 +995,16 @@
                 document.getElementById('instructionsBtn').style.display = 'block';
                 
                 showStatus('Connected!', 'success');
+                setTimeout(() => {
+                    document.getElementById('statusMessage').style.display = 'none';
+                }, 2000);
                 
                 // Update player list immediately to show current player
                 updatePlayersList();
+                
+                // Try again after a short delay to ensure Firebase events have fired
+                setTimeout(() => updatePlayersList(), 500);
+                setTimeout(() => updatePlayersList(), 1500);
                 
                 // Start sending position updates
                 setInterval(updatePlayerPosition, 50);
@@ -1026,21 +1033,22 @@
         // Update players list
         function updatePlayersList() {
             const listEl = document.getElementById('playersList');
-            if (!listEl) return;
+            
+            if (!listEl) {
+                return;
+            }
             
             listEl.innerHTML = '';
             
             // Make sure we have a player before trying to show the list
             if (!player) {
-                console.log('updatePlayersList: No player yet');
+                listEl.innerHTML = '<div style="text-align: center; color: #ccc; padding: 10px;">Waiting for player...</div>';
                 return;
             }
             
             const allPlayers = [player, ...Object.values(connectedPlayers)]
                 .filter(p => p && p.name) // Make sure player exists and has a name
                 .sort((a, b) => (b.impact || 0) - (a.impact || 0));
-            
-            console.log('Updating player list. Total players:', allPlayers.length);
             
             if (allPlayers.length === 0) {
                 listEl.innerHTML = '<div style="text-align: center; color: #666; padding: 10px;">Loading...</div>';
