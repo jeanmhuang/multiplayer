@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agar.io Clone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow: hidden;
+            background: #222;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        #gameCanvas {
+            display: block;
+            background: #f0f0f0;
+        }
+        
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            pointer-events: none;
+        }
+        
+        #startScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        
+        #startScreen h1 {
+            font-size: 60px;
+            margin-bottom: 30px;
+            color: #4CAF50;
+        }
+        
+        #nameInput {
+            padding: 15px;
+            font-size: 20px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            width: 300px;
+            text-align: center;
+        }
+        
+        #startButton {
+            padding: 15px 40px;
+            font-size: 24px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        #startButton:hover {
+            background: #45a049;
+        }
+        
+        #leaderboard {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.6);
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            min-width: 200px;
+        }
+        
+        #leaderboard h3 {
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 5px;
+        }
+        
+        .leaderboard-entry {
+            padding: 5px;
+            margin: 5px 0;
+        }
+        
+        .leaderboard-entry.current {
+            background: rgba(76, 175, 80, 0.3);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="startScreen">
+        <h1>Agar.io Clone</h1>
+        <input type="text" id="nameInput" placeholder="Enter your name" maxlength="15">
+        <button id="startButton">Play!</button>
+        <p style="margin-top: 20px; color: #ccc;">Move with mouse • Eat smaller cells to grow</p>
+    </div>
+    
+    <div id="ui">
+        <div>Score: <span id="score">0</span></div>
+        <div>Mass: <span id="mass">10</span></div>
+    </div>
+    
+    <div id="leaderboard" style="display: none;">
+        <h3>Leaderboard</h3>
+        <div id="leaderboardContent"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startScreen = document.getElementById('startScreen');
+        const nameInput = document.getElementById('nameInput');
+        const startButton = document.getElementById('startButton');
+        const leaderboard = document.getElementById('leaderboard');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // Game configuration
+        const WORLD_WIDTH = 3000;
+        const WORLD_HEIGHT = 3000;
+        const FOOD_COUNT = 200;
+        const BOT_COUNT = 15;
+        const INITIAL_MASS = 10;
+        
+        // Game state
+        let gameStarted = false;
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height / 2;
+        let camera = { x: 0, y: 0 };
+        
+        // Player
+        let player = null;
+        
+        // Game objects
+        let food = [];
+        let bots = [];
+        
+        // Colors
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+            '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52B788'
+        ];
+        
+        // Cell class
+        class Cell {
+            constructor(x, y, mass, name, color, isPlayer = false) {
+                this.x = x;
+                this.y = y;
+                this.mass = mass;
+                this.name = name;
+                this.color = color;
+                this.isPlayer = isPlayer;
+                this.speedX = 0;
+                this.speedY = 0;
+            }
+            
+            get radius() {
+                return Math.sqrt(this.mass) * 2;
+            }
+            
+            get speed() {
+                return 5 - Math.log10(this.mass) * 0.5;
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.translate(-camera.x, -camera.y);
+                
+                // Draw cell
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // Draw name
+                if (this.name) {
+                    ctx.fillStyle = '#fff';
+                    ctx.font = `${Math.max(this.radius * 0.4, 12)}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(this.name, this.x, this.y);
+                    
+                    // Draw mass
+                    ctx.font = `${Math.max(this.radius * 0.3, 10)}px Arial`;
+                    ctx.fillText(Math.round(this.mass), this.x, this.y + this.radius * 0.5);
+                }
+                
+                ctx.restore();
+            }
+            
+            update() {
+                if (this.isPlayer) {
+                    // Move towards mouse
+                    const dx = mouseX + camera.x - this.x;
+                    const dy = mouseY + camera.y - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist > 5) {
+                        this.speedX = (dx / dist) * this.speed;
+                        this.speedY = (dy / dist) * this.speed;
+                    } else {
+                        this.speedX *= 0.9;
+                        this.speedY *= 0.9;
+                    }
+                } else {
+                    // Bot AI - move randomly or chase smaller cells
+                    if (Math.random() < 0.02) {
+                        const angle = Math.random() * Math.PI * 2;
+                        this.targetX = this.x + Math.cos(angle) * 200;
+                        this.targetY = this.y + Math.sin(angle) * 200;
+                    }
+                    
+                    // Chase nearby smaller cells
+                    let target = null;
+                    let minDist = 300;
+                    
+                    const allCells = [player, ...bots];
+                    for (let cell of allCells) {
+                        if (cell && cell !== this && cell.mass < this.mass * 0.8) {
+                            const dx = cell.x - this.x;
+                            const dy = cell.y - this.y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < minDist) {
+                                minDist = dist;
+                                target = cell;
+                            }
+                        }
+                    }
+                    
+                    if (target) {
+                        this.targetX = target.x;
+                        this.targetY = target.y;
+                    }
+                    
+                    if (this.targetX !== undefined) {
+                        const dx = this.targetX - this.x;
+                        const dy = this.targetY - this.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (dist > 5) {
+                            this.speedX = (dx / dist) * this.speed;
+                            this.speedY = (dy / dist) * this.speed;
+                        }
+                    }
+                }
+                
+                // Apply movement
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                // Keep in bounds
+                this.x = Math.max(this.radius, Math.min(WORLD_WIDTH - this.radius, this.x));
+                this.y = Math.max(this.radius, Math.min(WORLD_HEIGHT - this.radius, this.y));
+                
+                // Friction
+                this.speedX *= 0.95;
+                this.speedY *= 0.95;
+            }
+        }
+        
+        // Food class
+        class Food {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = 5;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.translate(-camera.x, -camera.y);
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+        
+        // Initialize game
+        function init() {
+            const playerName = nameInput.value.trim() || 'Player';
+            player = new Cell(
+                WORLD_WIDTH / 2,
+                WORLD_HEIGHT / 2,
+                INITIAL_MASS,
+                playerName,
+                '#4CAF50',
+                true
+            );
+            
+            // Create food
+            food = [];
+            for (let i = 0; i < FOOD_COUNT; i++) {
+                food.push(new Food(
+                    Math.random() * WORLD_WIDTH,
+                    Math.random() * WORLD_HEIGHT
+                ));
+            }
+            
+            // Create bots
+            bots = [];
+            const botNames = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Omega', 'Sigma', 'Zeta', 
+                              'Theta', 'Kappa', 'Lambda', 'Nova', 'Pixel', 'Quantum', 'Rogue', 'Shadow'];
+            for (let i = 0; i < BOT_COUNT; i++) {
+                bots.push(new Cell(
+                    Math.random() * WORLD_WIDTH,
+                    Math.random() * WORLD_HEIGHT,
+                    INITIAL_MASS + Math.random() * 20,
+                    botNames[i],
+                    colors[Math.floor(Math.random() * colors.length)],
+                    false
+                ));
+            }
+            
+            gameStarted = true;
+            startScreen.style.display = 'none';
+            leaderboard.style.display = 'block';
+            gameLoop();
+        }
+        
+        // Check collision between two circles
+        function checkCollision(obj1, obj2, r1, r2) {
+            const dx = obj1.x - obj2.x;
+            const dy = obj1.y - obj2.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            return dist < r1 + r2;
+        }
+        
+        // Update game state
+        function update() {
+            if (!player) return;
+            
+            // Update player
+            player.update();
+            
+            // Update camera
+            camera.x = player.x - canvas.width / 2;
+            camera.y = player.y - canvas.height / 2;
+            camera.x = Math.max(0, Math.min(WORLD_WIDTH - canvas.width, camera.x));
+            camera.y = Math.max(0, Math.min(WORLD_HEIGHT - canvas.height, camera.y));
+            
+            // Player eats food
+            for (let i = food.length - 1; i >= 0; i--) {
+                if (checkCollision(player, food[i], player.radius, food[i].radius)) {
+                    player.mass += 1;
+                    food.splice(i, 1);
+                    
+                    // Spawn new food
+                    food.push(new Food(
+                        Math.random() * WORLD_WIDTH,
+                        Math.random() * WORLD_HEIGHT
+                    ));
+                }
+            }
+            
+            // Update bots
+            for (let bot of bots) {
+                bot.update();
+                
+                // Bots eat food
+                for (let i = food.length - 1; i >= 0; i--) {
+                    if (checkCollision(bot, food[i], bot.radius, food[i].radius)) {
+                        bot.mass += 1;
+                        food.splice(i, 1);
+                        
+                        // Spawn new food
+                        food.push(new Food(
+                            Math.random() * WORLD_WIDTH,
+                            Math.random() * WORLD_HEIGHT
+                        ));
+                        break;
+                    }
+                }
+            }
+            
+            // Check cell collisions
+            const allCells = [player, ...bots];
+            for (let i = 0; i < allCells.length; i++) {
+                for (let j = i + 1; j < allCells.length; j++) {
+                    const cell1 = allCells[i];
+                    const cell2 = allCells[j];
+                    
+                    if (!cell1 || !cell2) continue;
+                    
+                    if (checkCollision(cell1, cell2, cell1.radius, cell2.radius)) {
+                        // Larger cell eats smaller cell
+                        if (cell1.mass > cell2.mass * 1.2) {
+                            cell1.mass += cell2.mass * 0.8;
+                            
+                            if (cell2.isPlayer) {
+                                // Game over
+                                alert(`Game Over! Your score: ${Math.round(player.mass)}`);
+                                location.reload();
+                            } else {
+                                // Remove bot and create new one
+                                const index = bots.indexOf(cell2);
+                                if (index > -1) {
+                                    bots.splice(index, 1);
+                                    bots.push(new Cell(
+                                        Math.random() * WORLD_WIDTH,
+                                        Math.random() * WORLD_HEIGHT,
+                                        INITIAL_MASS + Math.random() * 10,
+                                        cell2.name,
+                                        colors[Math.floor(Math.random() * colors.length)],
+                                        false
+                                    ));
+                                }
+                            }
+                        } else if (cell2.mass > cell1.mass * 1.2) {
+                            cell2.mass += cell1.mass * 0.8;
+                            
+                            if (cell1.isPlayer) {
+                                // Game over
+                                alert(`Game Over! Your score: ${Math.round(player.mass)}`);
+                                location.reload();
+                            } else {
+                                // Remove bot and create new one
+                                const index = bots.indexOf(cell1);
+                                if (index > -1) {
+                                    bots.splice(index, 1);
+                                    bots.push(new Cell(
+                                        Math.random() * WORLD_WIDTH,
+                                        Math.random() * WORLD_HEIGHT,
+                                        INITIAL_MASS + Math.random() * 10,
+                                        cell1.name,
+                                        colors[Math.floor(Math.random() * colors.length)],
+                                        false
+                                    ));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Update UI
+            document.getElementById('score').textContent = Math.round(player.mass);
+            document.getElementById('mass').textContent = Math.round(player.mass);
+            
+            // Update leaderboard
+            updateLeaderboard();
+        }
+        
+        // Update leaderboard
+        function updateLeaderboard() {
+            const allCells = [player, ...bots].sort((a, b) => b.mass - a.mass).slice(0, 10);
+            const leaderboardContent = document.getElementById('leaderboardContent');
+            leaderboardContent.innerHTML = '';
+            
+            allCells.forEach((cell, index) => {
+                const entry = document.createElement('div');
+                entry.className = 'leaderboard-entry' + (cell.isPlayer ? ' current' : '');
+                entry.textContent = `${index + 1}. ${cell.name} - ${Math.round(cell.mass)}`;
+                leaderboardContent.appendChild(entry);
+            });
+        }
+        
+        // Draw game
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid
+            ctx.save();
+            ctx.translate(-camera.x, -camera.y);
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            
+            for (let x = 0; x <= WORLD_WIDTH; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, WORLD_HEIGHT);
+                ctx.stroke();
+            }
+            
+            for (let y = 0; y <= WORLD_HEIGHT; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(WORLD_WIDTH, y);
+                ctx.stroke();
+            }
+            ctx.restore();
+            
+            // Draw food
+            for (let f of food) {
+                f.draw();
+            }
+            
+            // Draw cells (sorted by mass for proper layering)
+            const allCells = [player, ...bots].sort((a, b) => a.mass - b.mass);
+            for (let cell of allCells) {
+                if (cell) cell.draw();
+            }
+        }
+        
+        // Game loop
+        function gameLoop() {
+            if (!gameStarted) return;
+            
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Event listeners
+        canvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+        
+        startButton.addEventListener('click', init);
+        nameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') init();
+        });
+        
+        // Focus on name input
+        nameInput.focus();
+    </script>
+</body>
+</html>
