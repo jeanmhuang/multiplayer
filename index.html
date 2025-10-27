@@ -1154,19 +1154,26 @@
                 
                 if (existingTree) {
                     // REMOVE the tree
-                    const treeSnapshot = await gameRef.child('world/trees').once('value');
-                    const treeData = treeSnapshot.val() || {};
+                    console.log('Attempting to remove tree at', playerGridX, playerGridY);
                     
-                    for (let [key, value] of Object.entries(treeData)) {
-                        if (value.gridX === playerGridX && value.gridY === playerGridY) {
-                            await gameRef.child('world/trees').child(key).remove();
-                            showStatus('🌳 Tree removed!', 'success');
-                            setTimeout(() => {
-                                document.getElementById('statusMessage').style.display = 'none';
-                            }, 2000);
-                            return;
-                        }
+                    // Find the tree key directly using the ID pattern
+                    const treeId = `tree_${playerGridX}_${playerGridY}`;
+                    
+                    try {
+                        await gameRef.child('world/trees').child(treeId).remove();
+                        console.log('Tree removed from Firebase:', treeId);
+                        showStatus('🌳 Tree removed!', 'success');
+                        setTimeout(() => {
+                            document.getElementById('statusMessage').style.display = 'none';
+                        }, 2000);
+                    } catch (error) {
+                        console.error('Error removing tree:', error);
+                        showStatus('🚫 Error removing tree!', 'error');
+                        setTimeout(() => {
+                            document.getElementById('statusMessage').style.display = 'none';
+                        }, 2000);
                     }
+                    return;
                 } else {
                     // PLANT a new tree
                     // Can't plant trees on water
@@ -1252,19 +1259,26 @@
                 
                 if (existingSolar) {
                     // REMOVE the solar panel
-                    const solarSnapshot = await gameRef.child('world/solar').once('value');
-                    const solarData = solarSnapshot.val() || {};
+                    console.log('Attempting to remove solar at', playerGridX, playerGridY);
                     
-                    for (let [key, value] of Object.entries(solarData)) {
-                        if (value.gridX === playerGridX && value.gridY === playerGridY) {
-                            await gameRef.child('world/solar').child(key).remove();
-                            showStatus('☀️ Solar panel removed!', 'success');
-                            setTimeout(() => {
-                                document.getElementById('statusMessage').style.display = 'none';
-                            }, 2000);
-                            return;
-                        }
+                    // Find the solar key directly using the ID pattern
+                    const solarId = `solar_${playerGridX}_${playerGridY}`;
+                    
+                    try {
+                        await gameRef.child('world/solar').child(solarId).remove();
+                        console.log('Solar removed from Firebase:', solarId);
+                        showStatus('☀️ Solar panel removed!', 'success');
+                        setTimeout(() => {
+                            document.getElementById('statusMessage').style.display = 'none';
+                        }, 2000);
+                    } catch (error) {
+                        console.error('Error removing solar:', error);
+                        showStatus('🚫 Error removing solar!', 'error');
+                        setTimeout(() => {
+                            document.getElementById('statusMessage').style.display = 'none';
+                        }, 2000);
                     }
+                    return;
                 } else {
                     // PLACE a new solar panel
                     // Can't place solar panels on water
