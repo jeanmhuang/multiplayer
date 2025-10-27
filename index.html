@@ -371,6 +371,121 @@
         .action-label {
             font-size: 12px;
         }
+        
+        #instructionsBtn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: rgba(59, 130, 246, 0.8);
+            color: white;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
+        }
+        
+        #instructionsBtn:hover {
+            background: rgba(59, 130, 246, 1);
+            transform: translateY(-2px);
+        }
+        
+        #instructionsModal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .instructions-content {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%);
+            padding: 40px;
+            border-radius: 20px;
+            border: 3px solid #4ade80;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: white;
+        }
+        
+        .instructions-content h2 {
+            color: #4ade80;
+            margin-bottom: 20px;
+            font-size: 32px;
+            text-align: center;
+        }
+        
+        .instructions-section {
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border-left: 4px solid #4ade80;
+        }
+        
+        .instructions-section h3 {
+            color: #93c5fd;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .instructions-section p {
+            line-height: 1.8;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        
+        .control-item {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .control-key {
+            background: #4ade80;
+            color: black;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-right: 15px;
+            min-width: 80px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .control-desc {
+            flex: 1;
+        }
+        
+        .close-instructions {
+            display: block;
+            margin: 30px auto 0;
+            padding: 15px 40px;
+            background: #4ade80;
+            color: black;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .close-instructions:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(74, 222, 128, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -393,6 +508,7 @@
         
         <input type="text" id="nameInput" placeholder="Enter Champion Name" maxlength="12">
         <button id="startButton">JOIN GAME</button>
+        <button class="toggle-setup" style="margin-top: 15px;" onclick="showInstructions()">📖 HOW TO PLAY</button>
         
         <div id="statusMessage" style="display: none;"></div>
         
@@ -438,17 +554,78 @@
     </div>
     
     <div id="actions" style="display: none;">
-        <div class="action-button tree" onclick="setAction('tree')">
+        <div class="action-button tree" onclick="performActionFromButton('tree')">
             <span class="action-icon">🌳</span>
             <span class="action-label">PLANT (1)</span>
         </div>
-        <div class="action-button cleanup" onclick="setAction('cleanup')">
+        <div class="action-button cleanup" onclick="performActionFromButton('cleanup')">
             <span class="action-icon">🧹</span>
             <span class="action-label">CLEAN (2)</span>
         </div>
-        <div class="action-button solar" onclick="setAction('solar')">
+        <div class="action-button solar" onclick="performActionFromButton('solar')">
             <span class="action-icon">☀️</span>
             <span class="action-label">SOLAR (3)</span>
+        </div>
+    </div>
+    
+    <button id="instructionsBtn" style="display: none;" onclick="showInstructions()">📖 HOW TO PLAY</button>
+    
+    <div id="instructionsModal">
+        <div class="instructions-content">
+            <h2>🌍 HOW TO PLAY CLIMATE CHAMPIONS</h2>
+            
+            <div class="instructions-section">
+                <h3>🎯 YOUR MISSION</h3>
+                <p>Work together with other players around the world to restore Earth's ecosystem! Plant trees, clean pollution, and deploy renewable energy to increase the Global Ecosystem Health to 100%.</p>
+            </div>
+            
+            <div class="instructions-section">
+                <h3>🎮 CONTROLS</h3>
+                <div class="control-item">
+                    <div class="control-key">W A S D</div>
+                    <div class="control-desc">Move your champion around the map</div>
+                </div>
+                <div class="control-item">
+                    <div class="control-key">↑ ← ↓ →</div>
+                    <div class="control-desc">Alternative movement controls (Arrow keys)</div>
+                </div>
+            </div>
+            
+            <div class="instructions-section">
+                <h3>🌱 ACTIONS</h3>
+                <div class="control-item">
+                    <div class="control-key">1 or T</div>
+                    <div class="control-desc">🌳 <strong>Plant Tree</strong> - Absorbs CO₂ and restores forests (+10 impact, +0.5% health)</div>
+                </div>
+                <div class="control-item">
+                    <div class="control-key">2 or C</div>
+                    <div class="control-desc">🧹 <strong>Clean Pollution</strong> - Remove pollution from land and water (+15 impact, +0.8% health)</div>
+                </div>
+                <div class="control-item">
+                    <div class="control-key">3 or S</div>
+                    <div class="control-desc">☀️ <strong>Deploy Solar Panel</strong> - Generate renewable energy (+8 impact, +0.4% health)</div>
+                </div>
+                <div class="control-item">
+                    <div class="control-key">CLICK</div>
+                    <div class="control-desc">Click the action buttons at the bottom to perform actions</div>
+                </div>
+            </div>
+            
+            <div class="instructions-section">
+                <h3>📊 GAMEPLAY TIPS</h3>
+                <p><strong>🧹 Clean Pollution First:</strong> Gives the most impact points and ecosystem health boost.</p>
+                <p><strong>🌳 Plant Trees Strategically:</strong> Trees can't overlap - spread them out across the map.</p>
+                <p><strong>☀️ Solar Panels:</strong> Can be placed on most land tiles but not in water or forests.</p>
+                <p><strong>🏆 Compete & Cooperate:</strong> Race to the top of the leaderboard while helping heal the planet together!</p>
+                <p><strong>👥 Multiplayer:</strong> You'll see other players in real-time. Their actions affect the shared world!</p>
+            </div>
+            
+            <div class="instructions-section">
+                <h3>🎯 WINNING THE GAME</h3>
+                <p>The goal is to increase the <strong>Global Ecosystem Health</strong> (shown at the top center) from 30% to 100%. Every positive action you and other players take contributes to this shared goal. Work together to save the planet! 🌍</p>
+            </div>
+            
+            <button class="close-instructions" onclick="hideInstructions()">GOT IT! LET'S PLAY</button>
         </div>
     </div>
 
@@ -709,6 +886,7 @@
                 document.getElementById('impactMeter').style.display = 'block';
                 document.getElementById('onlinePlayers').style.display = 'block';
                 document.getElementById('actions').style.display = 'flex';
+                document.getElementById('instructionsBtn').style.display = 'block';
                 
                 showStatus('Connected!', 'success');
                 
@@ -764,6 +942,22 @@
             if (action === 'tree') document.querySelector('.action-button.tree').style.opacity = '1';
             else if (action === 'cleanup') document.querySelector('.action-button.cleanup').style.opacity = '1';
             else if (action === 'solar') document.querySelector('.action-button.solar').style.opacity = '1';
+        }
+        
+        // Perform action from button click
+        function performActionFromButton(action) {
+            setAction(action);
+            performAction(action);
+        }
+        
+        // Show instructions
+        function showInstructions() {
+            document.getElementById('instructionsModal').style.display = 'flex';
+        }
+        
+        // Hide instructions
+        function hideInstructions() {
+            document.getElementById('instructionsModal').style.display = 'none';
         }
         
         // Perform action
@@ -946,6 +1140,11 @@
         window.addEventListener('keydown', (e) => {
             keys[e.key] = true;
             
+            // Close instructions with Escape
+            if (e.key === 'Escape') {
+                hideInstructions();
+            }
+            
             if (e.key === '1' || e.key === 't' || e.key === 'T') {
                 setAction('tree');
                 performAction('tree');
@@ -958,6 +1157,13 @@
             } else if (e.key === ' ') {
                 e.preventDefault();
                 performAction(currentAction);
+            }
+        });
+        
+        // Close instructions when clicking outside
+        document.getElementById('instructionsModal').addEventListener('click', (e) => {
+            if (e.target.id === 'instructionsModal') {
+                hideInstructions();
             }
         });
         
