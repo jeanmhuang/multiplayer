@@ -46,14 +46,29 @@
             align-items: center;
             color: white;
             z-index: 1000;
+            overflow-y: auto;
+            padding: 30px 20px;
         }
         
         #startScreen h1 {
             font-size: 64px;
             margin-bottom: 10px;
+            margin-top: 20px;
             color: #4ade80;
             text-shadow: 0 0 30px rgba(74, 222, 128, 0.5);
             letter-spacing: 2px;
+        }
+        
+        @media (max-width: 768px) {
+            #startScreen h1 {
+                font-size: 48px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #startScreen h1 {
+                font-size: 36px;
+            }
         }
         
         .subtitle {
@@ -650,6 +665,9 @@
         const database = firebase.database();
         const gameRef = database.ref('game');
         
+        console.log('✅ Firebase initialized successfully!');
+        console.log('🌍 Climate Champions ready to start!');
+        
         function setupGame() {
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -870,9 +888,14 @@
         
         // Initialize game
         async function init() {
+            console.log('🚀 Starting game initialization...');
+            
             const nameInput = document.getElementById('nameInput').value.trim();
             if (!nameInput) {
-                alert('Please enter your name!');
+                showStatus('⚠️ Please enter your name!', 'error');
+                setTimeout(() => {
+                    document.getElementById('statusMessage').style.display = 'none';
+                }, 2000);
                 return;
             }
             
@@ -1003,7 +1026,7 @@
                 
             } catch (error) {
                 console.error('Error initializing game:', error);
-                alert('Failed to connect. Please check your internet connection.');
+                showStatus('❌ Connection failed! Check your internet and try again.', 'error');
                 document.getElementById('startButton').disabled = false;
                 document.getElementById('startButton').textContent = 'Join the Mission';
             }
