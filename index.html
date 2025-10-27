@@ -211,373 +211,347 @@
             top: 20px;
             left: 20px;
             color: white;
-            font-size: 16px;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.8);
             padding: 20px;
             border-radius: 12px;
-            border: 3px solid #4ade80;
-            min-width: 220px;
+            font-size: 16px;
+            border: 2px solid #4ade80;
             backdrop-filter: blur(10px);
+            z-index: 100;
+            min-width: 250px;
         }
         
         #hud h3 {
+            margin-bottom: 15px;
             color: #4ade80;
-            margin-bottom: 12px;
-            font-size: 18px;
+            font-size: 20px;
+            text-align: center;
             border-bottom: 2px solid #4ade80;
-            padding-bottom: 8px;
+            padding-bottom: 10px;
         }
         
-        #hud .stat {
+        .stat {
             margin: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 15px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
         }
         
-        #hud .stat-label {
+        .stat-label {
+            font-weight: 600;
             color: #93c5fd;
         }
         
-        #hud .stat-value {
+        .stat-value {
             font-weight: bold;
             color: #4ade80;
-            font-size: 17px;
-        }
-        
-        #onlinePlayers {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.75);
-            padding: 20px;
-            border-radius: 12px;
-            border: 3px solid #4ade80;
-            color: white;
-            min-width: 240px;
-            backdrop-filter: blur(10px);
-        }
-        
-        #onlinePlayers h3 {
-            margin-bottom: 12px;
-            text-align: center;
-            color: #4ade80;
-            border-bottom: 2px solid #4ade80;
-            padding-bottom: 8px;
             font-size: 18px;
         }
         
-        .player-entry {
-            padding: 8px;
-            margin: 6px 0;
-            font-size: 14px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        #health {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #4ade80;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            min-width: 280px;
         }
         
-        .player-entry.you {
-            background: rgba(74, 222, 128, 0.25);
-            font-weight: bold;
+        #health h3 {
+            color: #4ade80;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 18px;
+        }
+        
+        .health-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
             border: 2px solid #4ade80;
         }
         
-        .player-status {
-            width: 8px;
-            height: 8px;
-            background: #4ade80;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        #impactMeter {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 400px;
-            background: rgba(0, 0, 0, 0.75);
-            padding: 15px 20px;
-            border-radius: 12px;
-            border: 3px solid #4ade80;
-            backdrop-filter: blur(10px);
-        }
-        
-        #impactMeter h4 {
-            color: #4ade80;
-            margin-bottom: 10px;
-            font-size: 16px;
-            text-align: center;
-        }
-        
-        .meter-bar {
-            width: 100%;
-            height: 25px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            border: 2px solid #333;
-        }
-        
-        .meter-fill {
+        .health-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ef4444, #f59e0b, #4ade80);
+            background: linear-gradient(90deg, #22c55e, #4ade80);
             transition: width 0.5s;
-            border-radius: 10px;
+            border-radius: 13px;
         }
         
-        .meter-text {
+        .health-text {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
             font-weight: bold;
-            font-size: 13px;
-            text-shadow: 1px 1px 3px black;
+            font-size: 16px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
         }
         
-        #actions {
+        #actionButtons {
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.75);
-            padding: 15px 25px;
-            border-radius: 12px;
-            border: 3px solid #4ade80;
-            color: white;
-            backdrop-filter: blur(10px);
             display: flex;
             gap: 15px;
+            z-index: 100;
         }
         
-        .action-button {
-            padding: 12px 20px;
-            font-size: 14px;
+        .action-btn {
+            padding: 15px 30px;
+            font-size: 18px;
             font-weight: bold;
-            border: 2px solid;
-            border-radius: 8px;
+            border: 3px solid;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            min-width: 120px;
-            background-color: transparent;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         
-        .action-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
         
-        .action-button.tree {
-            background: rgba(34, 197, 94, 0.2);
-            border-color: #22c55e;
+        .action-btn.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px currentColor;
+        }
+        
+        #treeBtn {
+            background: rgba(34, 197, 94, 0.3);
             color: #22c55e;
+            border-color: #22c55e;
         }
         
-        .action-button.cleanup {
-            background: rgba(59, 130, 246, 0.2);
-            border-color: #3b82f6;
+        #cleanupBtn {
+            background: rgba(59, 130, 246, 0.3);
             color: #3b82f6;
+            border-color: #3b82f6;
         }
         
-        .action-button.solar {
-            background: rgba(251, 191, 36, 0.2);
-            border-color: #fbbf24;
+        #solarBtn {
+            background: rgba(251, 191, 36, 0.3);
             color: #fbbf24;
-        }
-        
-        .action-icon {
-            font-size: 24px;
-        }
-        
-        .action-label {
-            font-size: 12px;
+            border-color: #fbbf24;
         }
         
         #instructionsBtn {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             padding: 12px 24px;
-            background: rgba(59, 130, 246, 0.8);
-            color: white;
-            border: 2px solid #3b82f6;
-            border-radius: 8px;
-            cursor: pointer;
+            font-size: 16px;
             font-weight: bold;
+            background: rgba(147, 51, 234, 0.3);
+            color: #a855f7;
+            border: 2px solid #a855f7;
+            border-radius: 10px;
+            cursor: pointer;
             transition: all 0.2s;
             backdrop-filter: blur(10px);
-            font-size: 14px;
+            z-index: 100;
         }
         
         #instructionsBtn:hover {
-            background: rgba(59, 130, 246, 1);
-            transform: translateY(-2px);
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
         }
         
         #instructionsModal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
         }
         
         .instructions-content {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             padding: 40px;
             border-radius: 20px;
-            border: 3px solid #4ade80;
             max-width: 700px;
             max-height: 80vh;
             overflow-y: auto;
-            color: white;
+            border: 3px solid #4ade80;
+            box-shadow: 0 0 50px rgba(74, 222, 128, 0.5);
         }
         
         .instructions-content h2 {
             color: #4ade80;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             font-size: 32px;
             text-align: center;
         }
         
-        .instructions-section {
-            margin: 25px 0;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            border-left: 4px solid #4ade80;
-        }
-        
-        .instructions-section h3 {
+        .instructions-content h3 {
             color: #93c5fd;
+            margin-top: 25px;
             margin-bottom: 15px;
-            font-size: 20px;
+            font-size: 22px;
         }
         
-        .instructions-section p {
+        .instructions-content p, .instructions-content li {
+            color: white;
             line-height: 1.8;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .instructions-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .instructions-content li {
+            padding-left: 30px;
+            position: relative;
             margin-bottom: 10px;
-            font-size: 15px;
         }
         
-        .control-item {
-            display: flex;
-            align-items: center;
-            margin: 12px 0;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-        }
-        
-        .control-key {
-            background: #4ade80;
-            color: black;
-            padding: 8px 15px;
-            border-radius: 6px;
+        .instructions-content li:before {
+            content: "→";
+            position: absolute;
+            left: 10px;
+            color: #4ade80;
             font-weight: bold;
-            margin-right: 15px;
-            min-width: 80px;
-            text-align: center;
-            font-family: 'Courier New', monospace;
         }
         
-        .control-desc {
-            flex: 1;
-        }
-        
-        .close-instructions {
+        .close-btn {
             display: block;
             margin: 30px auto 0;
             padding: 15px 40px;
-            background: #4ade80;
-            border: none;
-            border-radius: 8px;
-            color: #1a1a1a;
+            font-size: 18px;
             font-weight: bold;
-            font-size: 16px;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: white;
+            border: none;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
         
-        .close-instructions:hover {
-            background: #22c55e;
-            transform: translateY(-2px);
+        .close-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(74, 222, 128, 0.6);
         }
-
-        .pollution-alert {
-            position: fixed;
-            top: 150px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(239, 68, 68, 0.95);
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-weight: bold;
+        
+        #leaderboard {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #fbbf24;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            min-width: 250px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        #leaderboard h3 {
+            color: #fbbf24;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 18px;
+            border-bottom: 2px solid #fbbf24;
+            padding-bottom: 10px;
+        }
+        
+        .player-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
             color: white;
-            z-index: 3000;
-            animation: slideDown 0.3s ease;
-            border: 2px solid #dc2626;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
-
-        @keyframes slideDown {
-            from { transform: translate(-50%, -20px); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
+        
+        .player-name {
+            font-weight: 600;
+            color: #93c5fd;
+        }
+        
+        .player-score {
+            font-weight: bold;
+            color: #4ade80;
+        }
+        
+        .player-item.me {
+            background: rgba(74, 222, 128, 0.2);
+            border: 1px solid #4ade80;
+        }
+        
+        /* Scrollbar styling */
+        #leaderboard::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #leaderboard::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        #leaderboard::-webkit-scrollbar-thumb {
+            background: #fbbf24;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
-    
     <div id="startScreen">
-        <h1>🌍 CLIMATE CHAMPIONS 🌍</h1>
-        <div class="subtitle">Multiplayer Climate Action Game</div>
-        <div class="multiplayer-badge">🌐 REAL-TIME MULTIPLAYER ENABLED</div>
+        <h1>🌍 Climate Champions</h1>
+        <div class="subtitle">Real-Time Multiplayer Climate Action</div>
+        <div class="multiplayer-badge">🌐 LIVE MULTIPLAYER • WORK TOGETHER</div>
         
         <div class="mission">
-            <h3>YOUR MISSION:</h3>
+            <h3>🎯 Your Mission</h3>
             <ul>
-                <li>Plant trees to absorb CO₂ and restore forests</li>
-                <li>Clean up pollution from land and water</li>
-                <li>Deploy solar panels for renewable energy</li>
-                <li>Work with other players to reach 100% Ecosystem Health!</li>
+                <li>Team up with players worldwide in real-time</li>
+                <li>Plant trees to restore forests</li>
+                <li>Clean up pollution across the planet</li>
+                <li>Deploy solar panels for clean energy</li>
+                <li>Reach 100% Global Ecosystem Health together!</li>
             </ul>
         </div>
         
-        <input type="text" id="nameInput" placeholder="Enter your guardian name" maxlength="15">
-        <button id="startButton">JOIN GAME</button>
+        <input type="text" id="nameInput" placeholder="Enter your hero name..." maxlength="20">
+        <button id="startButton">Join the Mission</button>
         
         <div class="controls">
-            <div>🎮 <strong>WASD / Arrow Keys</strong> - Move</div>
-            <div>🌳 <strong>1 or T</strong> - Plant/Remove Tree</div>
-            <div>🧹 <strong>2 or C</strong> - Clean Pollution</div>
-            <div>☀️ <strong>3 or S</strong> - Deploy/Remove Solar Panel</div>
+            <div><strong>Movement:</strong> WASD or Arrow Keys</div>
+            <div><strong>Actions:</strong> 1, 2, 3 or T, C, S keys</div>
+            <div><strong>Or click the action buttons!</strong></div>
         </div>
     </div>
     
+    <canvas id="gameCanvas"></canvas>
+    
     <div id="hud" style="display: none;">
-        <h3>🌿 YOUR STATS</h3>
+        <h3>📊 Your Impact</h3>
         <div class="stat">
             <span class="stat-label">🌳 Trees:</span>
             <span class="stat-value" id="trees">0</span>
@@ -591,170 +565,90 @@
             <span class="stat-value" id="solar">0</span>
         </div>
         <div class="stat">
-            <span class="stat-label">⭐ Impact:</span>
+            <span class="stat-label">⭐ Total Impact:</span>
             <span class="stat-value" id="impact">0</span>
         </div>
     </div>
     
-    <div id="impactMeter" style="display: none;">
-        <h4>🌍 GLOBAL ECOSYSTEM HEALTH</h4>
-        <div class="meter-bar">
-            <div class="meter-fill" id="healthFill" style="width: 30%;"></div>
-            <div class="meter-text" id="healthText">30%</div>
+    <div id="health" style="display: none;">
+        <h3>🌍 Global Ecosystem Health</h3>
+        <div class="health-bar">
+            <div class="health-fill" id="healthFill" style="width: 0%"></div>
+            <div class="health-text" id="healthText">0%</div>
         </div>
     </div>
     
-    <div id="onlinePlayers" style="display: none;">
-        <h3>🏆 LEADERBOARD</h3>
-        <div id="playersList"></div>
-    </div>
-    
-    <div id="actions" style="display: none;">
-        <button class="action-button tree" id="treeBtn">
-            <div class="action-icon">🌳</div>
-            <div class="action-label">Tree (T/1)</div>
-        </button>
-        <button class="action-button cleanup" id="cleanupBtn">
-            <div class="action-icon">🧹</div>
-            <div class="action-label">Clean (C/2)</div>
-        </button>
-        <button class="action-button solar" id="solarBtn">
-            <div class="action-icon">☀️</div>
-            <div class="action-label">Solar (S/3)</div>
-        </button>
-    </div>
-    
-    <button id="instructionsBtn" style="display: none;">📋 Instructions</button>
+    <button id="instructionsBtn" style="display: none;">📖 How to Play</button>
     
     <div id="instructionsModal">
         <div class="instructions-content">
-            <h2>📋 HOW TO PLAY</h2>
+            <h2>🎮 How to Play Climate Champions</h2>
             
-            <div class="instructions-section">
-                <h3>🎮 Movement</h3>
-                <div class="control-item">
-                    <div class="control-key">WASD</div>
-                    <div class="control-desc">Move your champion around the world</div>
-                </div>
-                <div class="control-item">
-                    <div class="control-key">Arrows</div>
-                    <div class="control-desc">Alternative movement controls</div>
-                </div>
-            </div>
+            <h3>🎯 Goal</h3>
+            <p>Work together with all players to reach <strong>100% Global Ecosystem Health!</strong></p>
             
-            <div class="instructions-section">
-                <h3>🌍 Actions</h3>
-                <div class="control-item">
-                    <div class="control-key">T or 1</div>
-                    <div class="control-desc">Plant or Remove Tree (must be on same tile)</div>
-                </div>
-                <div class="control-item">
-                    <div class="control-key">C or 2</div>
-                    <div class="control-desc">Clean Pollution</div>
-                </div>
-                <div class="control-item">
-                    <div class="control-key">S or 3</div>
-                    <div class="control-desc">Deploy or Remove Solar Panel (must be on same tile)</div>
-                </div>
-            </div>
+            <h3>🕹️ Controls</h3>
+            <ul>
+                <li><strong>WASD</strong> or <strong>Arrow Keys</strong> - Move your character</li>
+                <li><strong>T or 1</strong> - Plant Tree mode</li>
+                <li><strong>C or 2</strong> - Cleanup mode</li>
+                <li><strong>S or 3</strong> - Solar Panel mode</li>
+                <li><strong>Spacebar</strong> - Perform selected action</li>
+                <li><strong>Escape</strong> - Close this menu</li>
+            </ul>
             
-            <div class="instructions-section">
-                <h3>💡 Strategy Tips</h3>
-                <p><strong>🧹 Clean Pollution First:</strong> Gives the most impact points and ecosystem health boost.</p>
-                <p><strong>🌳 Plant Trees Strategically:</strong> Trees can't overlap - spread them out. Trees can only be planted on land (not water!).</p>
-                <p><strong>☀️ Solar Panels:</strong> Place on land tiles only (not water or where trees already exist).</p>
-                <p><strong>🚫 One Per Tile:</strong> Each tile can have EITHER a tree OR a solar panel, but not both!</p>
-                <p><strong>💧 Water Tiles:</strong> The blue squares are water - you can't build on them, but you can clean pollution from them!</p>
-                <p><strong>🔄 Easy Removal:</strong> Made a mistake? Walk onto the tree/solar and press T or S to remove it instantly!</p>
-            </div>
+            <h3>🌱 Actions</h3>
+            <ul>
+                <li><strong>🌳 Plant Trees:</strong> Adds +5 health, +5 impact</li>
+                <li><strong>🧹 Clean Pollution:</strong> Removes pollution, +3 health, +3 impact</li>
+                <li><strong>☀️ Deploy Solar:</strong> Clean energy, +0.4 health, +8 impact</li>
+            </ul>
             
-            <div class="instructions-section">
-                <h3>🏆 Goal</h3>
-                <p>The goal is to increase the Global Ecosystem Health (shown at the top center) from 30% to 100%. Every positive action you and other players take contributes to this shared goal. Work together to save the planet!</p>
-            </div>
+            <h3>💡 Tips</h3>
+            <ul>
+                <li>All players share the same world in real-time!</li>
+                <li>Focus on cleaning pollution first - it hurts ecosystem health</li>
+                <li>Solar panels can't be placed on water or where trees exist</li>
+                <li>Watch the leaderboard to see top contributors</li>
+                <li>Pollution now spawns continuously - keep the world clean!</li>
+            </ul>
             
-            <button class="close-instructions" onclick="hideInstructions()">Got it! Let's play 🌍</button>
+            <button class="close-btn" onclick="hideInstructions()">Got It!</button>
         </div>
     </div>
     
-    <div id="statusMessage" class="status-message" style="display: none;"></div>
+    <div id="actionButtons" style="display: none;">
+        <button class="action-btn" id="treeBtn">🌳 Tree (T/1)</button>
+        <button class="action-btn" id="cleanupBtn">🧹 Clean (C/2)</button>
+        <button class="action-btn" id="solarBtn">☀️ Solar (S/3)</button>
+    </div>
     
-    <!-- Firebase SDK -->
+    <div id="leaderboard" style="display: none;">
+        <h3>🏆 Top Contributors</h3>
+        <div id="playersList"></div>
+    </div>
+    
+    <div id="statusMessage" class="status-message" style="display: none;"></div>
+
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
     <script>
-        function showStatus(message, type) {
-            const statusEl = document.getElementById('statusMessage');
-            statusEl.textContent = message;
-            statusEl.className = 'status-message';
-            if (type === 'error') statusEl.classList.add('error-message');
-            if (type === 'success') statusEl.classList.add('success-message');
-            if (type === 'info') statusEl.className = 'status-message';
-            statusEl.style.display = message ? 'block' : 'none';
-        }
+        // Firebase config (using existing config from the page)
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_x-rWGzmUvpZz6fLNYfpHdM5sVhP0Oe8",
+            authDomain: "multiplayergame-76cdd.firebaseapp.com",
+            databaseURL: "https://multiplayergame-76cdd-default-rtdb.firebaseio.com",
+            projectId: "multiplayergame-76cdd",
+            storageBucket: "multiplayergame-76cdd.firebasestorage.app",
+            messagingSenderId: "1058026621878",
+            appId: "1:1058026621878:web:c77e4d866f05e9fbc7b6f3"
+        };
         
-        function showInstructions() {
-            document.getElementById('instructionsModal').style.display = 'flex';
-        }
-        
-        function hideInstructions() {
-            document.getElementById('instructionsModal').style.display = 'none';
-        }
-
-        function showPollutionAlert(amount) {
-            const alert = document.createElement('div');
-            alert.className = 'pollution-alert';
-            alert.textContent = `⚠️ ${amount} new pollution spot${amount > 1 ? 's' : ''} appeared!`;
-            document.body.appendChild(alert);
-            setTimeout(() => alert.remove(), 3000);
-        }
-        
-        let retryCount = 0;
-        const maxRetries = 10;
-        
-        // Wait for Firebase to load
-        window.addEventListener('load', function() {
-            initializeApp();
-        });
-        
-        function initializeApp() {
-            retryCount++;
-            
-            // Check if Firebase loaded
-            if (typeof firebase === 'undefined') {
-                if (retryCount >= maxRetries) {
-                    const errorMsg = document.getElementById('statusMessage');
-                    errorMsg.innerHTML = `
-                        <strong>⚠️ Firebase Failed to Load</strong><br><br>
-                        <strong>Troubleshooting:</strong><br>
-                        1. Check your internet connection<br>
-                        2. Disable ad blockers (they often block Firebase)<br>
-                        3. Try a different browser<br>
-                        4. Check if firewall is blocking Google CDN<br>
-                        5. Press Ctrl+Shift+R (or Cmd+Shift+R) to hard refresh<br><br>
-                        <strong>Still not working?</strong> Open browser console (F12) to see detailed errors.
-                    `;
-                    errorMsg.className = 'status-message error-message';
-                    errorMsg.style.display = 'block';
-                    console.error('Firebase failed to load after ' + maxRetries + ' attempts.');
-                    console.error('Possible causes:');
-                    console.error('1) Ad blocker blocking Firebase CDN');
-                    console.error('2) Firewall blocking googleapis.com or gstatic.com');
-                    console.error('3) No internet connection');
-                    console.error('4) Browser extension interfering');
-                    return;
-                }
-                
-                showStatus(`Loading Firebase... (${retryCount}/${maxRetries})`, 'info');
-                setTimeout(initializeApp, 500);
-                return;
-            }
-            
-            showStatus('', 'success');
-            document.getElementById('statusMessage').style.display = 'none';
-            setupGame();
-        }
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const gameRef = database.ref('game');
         
         function setupGame() {
         const canvas = document.getElementById('gameCanvas');
@@ -763,131 +657,86 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-        
-        // Firebase configuration - HARDCODED
-        const firebaseConfig = {
-            apiKey: "AIzaSyDnec7-hhj7kcxlS3HOrRGdP3VgOxAeEXY",
-            databaseURL: "https://climate-champions-8e318-default-rtdb.firebaseio.com"
-        };
-        
-        // Initialize Firebase
-        let database, gameRef;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            database = firebase.database();
-            gameRef = database.ref('game');
-        } catch (error) {
-            console.error('Firebase initialization error:', error);
-            showStatus('Firebase connection failed: ' + error.message, 'error');
-            return;
-        }
-        
-        // Firebase and multiplayer state
-        let playerId = null;
-        let connectedPlayers = {};
-        let isAdmin = false;
-        let pollutionSpawnTimer = null;
-        
-        // Pollution spawning constants
-        const POLLUTION_SPAWN_INTERVAL = 15000; // 15 seconds
-        const POLLUTION_SPAWN_AMOUNT = 3; // Number of pollution spots per spawn
-        
         // Game constants
-        const WORLD_SIZE = 3500;
-        const TILE_SIZE = 50;
-        const PLAYER_SIZE = 20;
+        const TILE_SIZE = 64;
+        const WORLD_SIZE = 3200;
+        const PLAYER_SIZE = 16;
+        const GRID_SIZE = WORLD_SIZE / TILE_SIZE;
         
         // Game state
         let gameStarted = false;
-        let keys = {};
-        let camera = { x: 0, y: 0 };
-        let currentAction = 'tree';
-        let ecosystemHealth = 30;
-        
-        // Game objects
+        let playerId = null;
         let player = null;
-        let tiles = [];
-        let pollution = [];
-        let trees = [];
-        let solarPanels = [];
-        let particles = [];
+        let connectedPlayers = {};
+        let currentAction = 'tree';
+        let keys = {};
         
-        // Colors
+        // World data
+        let tiles = [];
+        let trees = [];
+        let pollution = [];
+        let solarPanels = [];
+        let ecosystemHealth = 0;
+        
+        // Camera
+        let camera = { x: 0, y: 0 };
+        
+        // Pollution spawning settings
+        const POLLUTION_SPAWN_INTERVAL = 8000; // 8 seconds
+        const MAX_POLLUTION = 80; // Maximum pollution on map
+        const MIN_POLLUTION = 20; // Minimum pollution to maintain
+        let pollutionSpawnTimer = null;
+        
+        // Tile colors
         const TILE_COLORS = {
-            dirt: '#8b7355',
             grass: '#7cb342',
-            forest: '#2e7d32',
-            water: '#1976d2',
-            polluted_water: '#424242',
-            polluted_land: '#4a4a4a'
+            dirt: '#8d6e63',
+            water: '#42a5f5',
+            polluted_land: '#5d4037',
+            polluted_water: '#263238'
         };
         
-        const PLAYER_COLORS = ['#4ade80', '#10b981', '#059669', '#84cc16', '#22d3ee', '#06b6d4', '#8b5cf6', '#a855f7'];
-        
-        // Champion class
-        class Champion {
-            constructor(id, data) {
-                this.id = id;
-                this.x = data.x || WORLD_SIZE / 2;
-                this.y = data.y || WORLD_SIZE / 2;
-                this.name = data.name || 'Champion';
-                this.color = data.color || '#4ade80';
+        // Player class
+        class Player {
+            constructor(data) {
+                this.id = data.id;
+                this.name = data.name;
+                this.x = data.x;
+                this.y = data.y;
+                this.color = data.color;
                 this.treesPlanted = data.treesPlanted || 0;
                 this.pollutionCleaned = data.pollutionCleaned || 0;
                 this.solarDeployed = data.solarDeployed || 0;
                 this.impact = data.impact || 0;
-                this.lastUpdate = data.lastUpdate || Date.now();
             }
             
             draw() {
-                ctx.save();
-                ctx.translate(this.x - camera.x, this.y - camera.y);
-                
-                // Draw champion body
+                // Draw player circle
                 ctx.beginPath();
-                ctx.arc(0, 0, PLAYER_SIZE, 0, Math.PI * 2);
+                ctx.arc(this.x - camera.x, this.y - camera.y, PLAYER_SIZE, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
                 ctx.fill();
-                ctx.strokeStyle = '#fff';
+                ctx.strokeStyle = 'white';
                 ctx.lineWidth = 3;
                 ctx.stroke();
                 
-                // Draw icon
-                ctx.font = '16px Arial';
+                // Draw name tag
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 14px Arial';
                 ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(this.id === playerId ? '🌟' : '🌿', 0, 0);
-                
-                ctx.restore();
-                
-                // Draw name
-                ctx.fillStyle = '#fff';
-                ctx.font = 'bold 13px Arial';
-                ctx.textAlign = 'center';
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 3;
-                ctx.strokeText(this.name, this.x - camera.x, this.y - camera.y - PLAYER_SIZE - 10);
-                ctx.fillText(this.name, this.x - camera.x, this.y - camera.y - PLAYER_SIZE - 10);
+                ctx.fillText(this.name, this.x - camera.x, this.y - camera.y - 25);
             }
         }
         
-        // Tile system
-        function initTiles() {
-            const cols = Math.ceil(WORLD_SIZE / TILE_SIZE);
-            const rows = Math.ceil(WORLD_SIZE / TILE_SIZE);
-            
-            for (let y = 0; y < rows; y++) {
-                for (let x = 0; x < cols; x++) {
-                    let type = 'grass';
+        // Initialize world
+        function initWorld() {
+            tiles = [];
+            for (let y = 0; y < GRID_SIZE; y++) {
+                for (let x = 0; x < GRID_SIZE; x++) {
                     const rand = Math.random();
-                    
+                    let type = 'grass';
                     if (rand < 0.15) type = 'water';
-                    else if (rand < 0.25) type = 'dirt';
-                    else if (rand < 0.35) type = 'forest';
+                    else if (rand < 0.18) type = 'dirt';
                     
                     tiles.push({ x, y, type });
                 }
@@ -895,225 +744,234 @@
         }
         
         function getTile(x, y) {
-            const cols = Math.ceil(WORLD_SIZE / TILE_SIZE);
-            return tiles[y * cols + x];
+            if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE) return null;
+            return tiles[y * GRID_SIZE + x];
         }
-
-        // Pollution spawning system
-        async function spawnPollution() {
-            if (!isAdmin) return; // Only admin spawns pollution
-            
-            const newPollution = [];
-            for (let i = 0; i < POLLUTION_SPAWN_AMOUNT; i++) {
-                const gridX = Math.floor(Math.random() * (WORLD_SIZE / TILE_SIZE));
-                const gridY = Math.floor(Math.random() * (WORLD_SIZE / TILE_SIZE));
-                const x = gridX * TILE_SIZE + TILE_SIZE / 2;
-                const y = gridY * TILE_SIZE + TILE_SIZE / 2;
-                
-                // Don't spawn on existing pollution, trees, or solar
-                const exists = pollution.some(p => 
-                    Math.abs(p.x - x) < TILE_SIZE && Math.abs(p.y - y) < TILE_SIZE
-                ) || trees.some(t => t.gridX === gridX && t.gridY === gridY) ||
-                   solarPanels.some(s => s.gridX === gridX && s.gridY === gridY);
-                
-                if (!exists) {
-                    const pollutionId = `pollution_${gridX}_${gridY}_${Date.now()}`;
-                    newPollution.push({ 
-                        x, 
-                        y, 
-                        gridX, 
-                        gridY, 
-                        id: pollutionId 
-                    });
-                }
-            }
-            
-            // Add to Firebase
-            if (newPollution.length > 0) {
-                for (const p of newPollution) {
-                    await gameRef.child('world/pollution').child(p.id).set({
-                        x: p.x,
-                        y: p.y,
-                        gridX: p.gridX,
-                        gridY: p.gridY
-                    });
-                }
-                console.log('Spawned', newPollution.length, 'pollution spots');
-                showPollutionAlert(newPollution.length);
-            }
+        
+        // Generate random color
+        function randomColor() {
+            const colors = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#22c55e', '#14b8a6', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#d946ef', '#ec4899'];
+            return colors[Math.floor(Math.random() * colors.length)];
         }
-
-        function startPollutionSpawner() {
-            if (pollutionSpawnTimer) clearInterval(pollutionSpawnTimer);
+        
+        // Show status message
+        function showStatus(message, type = 'success') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = 'status-message ' + type + '-message';
+            statusEl.style.display = 'block';
+        }
+        
+        // Instructions modal
+        function showInstructions() {
+            document.getElementById('instructionsModal').style.display = 'flex';
+        }
+        
+        function hideInstructions() {
+            document.getElementById('instructionsModal').style.display = 'none';
+        }
+        
+        // Update players list
+        function updatePlayersList() {
+            const allPlayers = [player, ...Object.values(connectedPlayers)].filter(p => p);
+            allPlayers.sort((a, b) => b.impact - a.impact);
             
-            // Initial spawn after 10 seconds
-            setTimeout(() => {
-                spawnPollution();
-                // Then spawn regularly
-                pollutionSpawnTimer = setInterval(spawnPollution, POLLUTION_SPAWN_INTERVAL);
-            }, 10000);
+            const listHtml = allPlayers.slice(0, 10).map((p, index) => {
+                const isMe = p.id === playerId;
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+                return `
+                    <div class="player-item ${isMe ? 'me' : ''}">
+                        <span class="player-name">${medal} ${p.name}</span>
+                        <span class="player-score">${p.impact}</span>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('playersList').innerHTML = listHtml;
+        }
+        
+        // Start pollution spawning
+        function startPollutionSpawning() {
+            console.log('🏭 Starting continuous pollution spawning...');
+            
+            pollutionSpawnTimer = setInterval(async () => {
+                if (!gameStarted || pollution.length >= MAX_POLLUTION) return;
+                
+                // Spawn 2-4 pollution pieces at a time
+                const spawnCount = Math.floor(Math.random() * 3) + 2;
+                
+                for (let i = 0; i < spawnCount && pollution.length < MAX_POLLUTION; i++) {
+                    // Find a valid spawn location
+                    let attempts = 0;
+                    let validLocation = false;
+                    let gridX, gridY;
+                    
+                    while (!validLocation && attempts < 50) {
+                        gridX = Math.floor(Math.random() * GRID_SIZE);
+                        gridY = Math.floor(Math.random() * GRID_SIZE);
+                        
+                        const tile = getTile(gridX, gridY);
+                        if (tile && tile.type !== 'water' && tile.type !== 'polluted_water') {
+                            // Check if pollution already exists here
+                            const pollutionExists = pollution.some(p => 
+                                Math.floor(p.x / TILE_SIZE) === gridX && 
+                                Math.floor(p.y / TILE_SIZE) === gridY
+                            );
+                            
+                            if (!pollutionExists) {
+                                validLocation = true;
+                            }
+                        }
+                        attempts++;
+                    }
+                    
+                    if (validLocation) {
+                        const pollutionId = `pollution_${gridX}_${gridY}_${Date.now()}_${Math.random()}`;
+                        const x = gridX * TILE_SIZE + TILE_SIZE / 2;
+                        const y = gridY * TILE_SIZE + TILE_SIZE / 2;
+                        
+                        try {
+                            await gameRef.child('world/pollution').child(pollutionId).set({
+                                x: x,
+                                y: y,
+                                gridX: gridX,
+                                gridY: gridY
+                            });
+                            
+                            // Decrease ecosystem health slightly
+                            const newHealth = Math.max(0, ecosystemHealth - 0.3);
+                            await gameRef.child('world/health').set(newHealth);
+                            
+                            console.log('🏭 New pollution spawned at:', gridX, gridY);
+                        } catch (error) {
+                            console.error('Error spawning pollution:', error);
+                        }
+                    }
+                }
+                
+                // Show notification every few spawns
+                if (Math.random() < 0.3) {
+                    showStatus('🏭 More pollution detected!', 'error');
+                    setTimeout(() => {
+                        document.getElementById('statusMessage').style.display = 'none';
+                    }, 2000);
+                }
+            }, POLLUTION_SPAWN_INTERVAL);
+        }
+        
+        // Stop pollution spawning
+        function stopPollutionSpawning() {
+            if (pollutionSpawnTimer) {
+                clearInterval(pollutionSpawnTimer);
+                pollutionSpawnTimer = null;
+                console.log('🛑 Stopped pollution spawning');
+            }
         }
         
         // Initialize game
         async function init() {
-            const playerName = document.getElementById('nameInput').value.trim() || 'Champion';
+            const nameInput = document.getElementById('nameInput').value.trim();
+            if (!nameInput) {
+                alert('Please enter your name!');
+                return;
+            }
+            
+            document.getElementById('startButton').disabled = true;
+            document.getElementById('startButton').textContent = 'Connecting...';
             
             try {
-                showStatus('Connecting to game...', 'info');
+                initWorld();
                 
                 // Generate player ID
-                playerId = 'player_' + Math.random().toString(36).substr(2, 9);
+                playerId = 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 
-                // Check if we're the first player (admin)
-                const adminSnapshot = await gameRef.child('admin').once('value');
-                if (!adminSnapshot.exists()) {
-                    isAdmin = true;
-                    await gameRef.child('admin').set(playerId);
-                    console.log('I am the admin - will spawn pollution');
-                    startPollutionSpawner();
-                }
+                // Create player
+                const spawnX = WORLD_SIZE / 2;
+                const spawnY = WORLD_SIZE / 2;
                 
-                // Get a unique color
-                const colorIndex = Object.keys(connectedPlayers).length % PLAYER_COLORS.length;
-                const playerColor = PLAYER_COLORS[colorIndex];
-                
-                // Initialize world
-                initTiles();
-                
-                console.log('Setting up Firebase listeners BEFORE adding self...');
-                console.log('My player ID will be:', playerId);
-                
-                // First, check if we can READ existing players
-                try {
-                    const existingPlayersSnapshot = await gameRef.child('players').once('value');
-                    const existingPlayers = existingPlayersSnapshot.val();
-                    console.log('Existing players in database:', existingPlayers);
-                    
-                    if (existingPlayers) {
-                        console.log('Found', Object.keys(existingPlayers).length, 'existing players');
-                        // Manually add existing players to connectedPlayers
-                        for (let [id, data] of Object.entries(existingPlayers)) {
-                            console.log('Manually adding existing player:', id, data.name);
-                            connectedPlayers[id] = new Champion(id, data);
-                        }
-                    } else {
-                        console.log('No existing players in database');
-                    }
-                } catch (error) {
-                    console.error('Error reading existing players:', error);
-                }
-                
-                // Set up listeners for future changes
-                gameRef.child('players').on('child_added', (snapshot) => {
-                    const id = snapshot.key;
-                    const data = snapshot.val();
-                    console.log('child_added event:', id, data.name);
-                    
-                    // Only add if not already in connectedPlayers and not self
-                    if (id !== playerId && !connectedPlayers[id]) {
-                        connectedPlayers[id] = new Champion(id, data);
-                        console.log('Added NEW player to connectedPlayers:', data.name);
-                        updatePlayersList();
-                    } else if (id === playerId) {
-                        console.log('Skipping self in child_added:', data.name);
-                    } else {
-                        console.log('Player already exists in connectedPlayers:', data.name);
-                    }
+                player = new Player({
+                    id: playerId,
+                    name: nameInput,
+                    x: spawnX,
+                    y: spawnY,
+                    color: randomColor(),
+                    treesPlanted: 0,
+                    pollutionCleaned: 0,
+                    solarDeployed: 0,
+                    impact: 0
                 });
                 
-                gameRef.child('players').on('child_changed', (snapshot) => {
-                    const id = snapshot.key;
-                    const data = snapshot.val();
-                    
-                    if (id === playerId) {
-                        // Update our own player data
-                        player.impact = data.impact;
-                        player.treesPlanted = data.treesPlanted;
-                        player.pollutionCleaned = data.pollutionCleaned;
-                        player.solarDeployed = data.solarDeployed;
-                    } else if (connectedPlayers[id]) {
-                        connectedPlayers[id] = new Champion(id, data);
-                    }
-                    updatePlayersList();
-                });
-                
-                gameRef.child('players').on('child_removed', (snapshot) => {
-                    const id = snapshot.key;
-                    console.log('Player disconnected:', id);
-                    delete connectedPlayers[id];
-                    updatePlayersList();
-                });
-                
-                console.log('Listeners set up. Now adding self to database...');
-                
-                // Add player to database
-                const playerData = {
-                    name: playerName,
-                    color: playerColor,
-                    x: WORLD_SIZE / 2 + (Math.random() - 0.5) * 200,
-                    y: WORLD_SIZE / 2 + (Math.random() - 0.5) * 200,
+                // Add to Firebase
+                await gameRef.child('players').child(playerId).set({
+                    name: player.name,
+                    x: player.x,
+                    y: player.y,
+                    color: player.color,
                     treesPlanted: 0,
                     pollutionCleaned: 0,
                     solarDeployed: 0,
                     impact: 0,
                     lastUpdate: Date.now()
-                };
-                
-                await gameRef.child('players').child(playerId).set(playerData);
-                console.log('Self added to database:', playerName, playerId);
-                
-                player = new Champion(playerId, playerData);
-                
-                // Set up presence system
-                const playerRef = gameRef.child('players').child(playerId);
-                playerRef.onDisconnect().remove();
-                
-                // Listen for shared world state
-                gameRef.child('world/pollution').on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        pollution = Object.entries(data).map(([id, p]) => ({
-                            ...p,
-                            id: id  // Ensure ID is preserved
-                        }));
-                        console.log('Loaded pollution:', pollution.length, 'spots');
-                    } else {
-                        pollution = [];
-                    }
                 });
                 
+                // Listen for other players
+                gameRef.child('players').on('value', (snapshot) => {
+                    connectedPlayers = {};
+                    snapshot.forEach((child) => {
+                        if (child.key !== playerId) {
+                            const data = child.val();
+                            connectedPlayers[child.key] = new Player({
+                                id: child.key,
+                                name: data.name,
+                                x: data.x,
+                                y: data.y,
+                                color: data.color,
+                                treesPlanted: data.treesPlanted,
+                                pollutionCleaned: data.pollutionCleaned,
+                                solarDeployed: data.solarDeployed,
+                                impact: data.impact
+                            });
+                        }
+                    });
+                    updatePlayersList();
+                });
+                
+                // Listen for trees
                 gameRef.child('world/trees').on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        trees = Object.entries(data).map(([id, t]) => ({
-                            ...t,
-                            id: id
-                        }));
-                    } else {
-                        trees = [];
-                    }
+                    trees = [];
+                    snapshot.forEach((child) => {
+                        trees.push({ id: child.key, ...child.val() });
+                    });
                 });
                 
+                // Listen for pollution
+                gameRef.child('world/pollution').on('value', (snapshot) => {
+                    pollution = [];
+                    snapshot.forEach((child) => {
+                        pollution.push({ id: child.key, ...child.val() });
+                    });
+                });
+                
+                // Listen for solar panels
                 gameRef.child('world/solar').on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        solarPanels = Object.entries(data).map(([id, s]) => ({
-                            ...s,
-                            id: id
-                        }));
-                    } else {
-                        solarPanels = [];
+                    solarPanels = [];
+                    snapshot.forEach((child) => {
+                        solarPanels.push({ id: child.key, ...child.val() });
+                    });
+                });
+                
+                // Listen for ecosystem health
+                gameRef.child('world/health').on('value', (snapshot) => {
+                    ecosystemHealth = snapshot.val() || 0;
+                    if (ecosystemHealth >= 100) {
+                        showStatus('🎉 VICTORY! 100% Ecosystem Health Achieved!', 'success');
                     }
                 });
                 
-                gameRef.child('world/health').on('value', (snapshot) => {
-                    ecosystemHealth = snapshot.val() || 30;
-                });
-                
-                // Position updates
-                setInterval(() => {
+                // Update position periodically
+                setInterval(async () => {
                     if (player && gameStarted) {
-                        gameRef.child('players').child(playerId).update({
+                        await gameRef.child('players').child(playerId).update({
                             x: player.x,
                             y: player.y,
                             lastUpdate: Date.now()
@@ -1121,186 +979,155 @@
                     }
                 }, 100);
                 
-                // Hide start screen
+                // Remove player on disconnect
+                gameRef.child('players').child(playerId).onDisconnect().remove();
+                
+                // Start game
+                gameStarted = true;
                 document.getElementById('startScreen').style.display = 'none';
                 document.getElementById('hud').style.display = 'block';
-                document.getElementById('impactMeter').style.display = 'block';
-                document.getElementById('onlinePlayers').style.display = 'block';
-                document.getElementById('actions').style.display = 'flex';
+                document.getElementById('health').style.display = 'block';
+                document.getElementById('actionButtons').style.display = 'flex';
+                document.getElementById('leaderboard').style.display = 'block';
                 document.getElementById('instructionsBtn').style.display = 'block';
                 
-                gameStarted = true;
-                requestAnimationFrame(gameLoop);
-                showStatus('Welcome to Climate Champions! 🌍', 'success');
+                // Start pollution spawning
+                startPollutionSpawning();
+                
+                gameLoop();
+                
+                showStatus('🌍 Welcome to Climate Champions!', 'success');
                 setTimeout(() => {
                     document.getElementById('statusMessage').style.display = 'none';
                 }, 3000);
                 
             } catch (error) {
                 console.error('Error initializing game:', error);
-                showStatus('Failed to join game: ' + error.message, 'error');
+                alert('Failed to connect. Please check your internet connection.');
+                document.getElementById('startButton').disabled = false;
+                document.getElementById('startButton').textContent = 'Join the Mission';
             }
-        }
-        
-        // Update player list
-        function updatePlayersList() {
-            const allPlayers = [player, ...Object.values(connectedPlayers)].filter(p => p);
-            allPlayers.sort((a, b) => b.impact - a.impact);
-            
-            const list = document.getElementById('playersList');
-            list.innerHTML = allPlayers.map((p, i) => `
-                <div class="player-entry ${p.id === playerId ? 'you' : ''}">
-                    <div>
-                        <span class="player-status"></span>
-                        ${i + 1}. ${p.name}
-                    </div>
-                    <div>⭐ ${p.impact}</div>
-                </div>
-            `).join('');
         }
         
         // Perform action
         async function performAction(action) {
             if (!player || !gameStarted) return;
             
+            // Update current action and button states
+            currentAction = action;
+            document.querySelectorAll('.action-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if (action === 'tree') {
+                document.getElementById('treeBtn').classList.add('active');
+            } else if (action === 'cleanup') {
+                document.getElementById('cleanupBtn').classList.add('active');
+            } else if (action === 'solar') {
+                document.getElementById('solarBtn').classList.add('active');
+            }
+            
             const playerGridX = Math.floor(player.x / TILE_SIZE);
             const playerGridY = Math.floor(player.y / TILE_SIZE);
             const tile = getTile(playerGridX, playerGridY);
             
-            if (action === 'cleanup') {
-                // Clean pollution
-                const pollutionHere = pollution.find(p => {
-                    const pGridX = Math.floor(p.x / TILE_SIZE);
-                    const pGridY = Math.floor(p.y / TILE_SIZE);
-                    return pGridX === playerGridX && pGridY === playerGridY;
-                });
-                
-                if (pollutionHere) {
-                    console.log('Found pollution to clean:', pollutionHere);
-                    console.log('Pollution ID:', pollutionHere.id);
-                    
-                    // Check if pollution still exists in Firebase before removing
-                    try {
-                        const pollutionSnapshot = await gameRef.child('world/pollution').child(pollutionHere.id).once('value');
-                        
-                        if (!pollutionSnapshot.exists()) {
-                            console.log('Pollution already cleaned by another player');
-                            showStatus('💨 Already cleaned!', 'info');
-                            setTimeout(() => {
-                                document.getElementById('statusMessage').style.display = 'none';
-                            }, 1500);
-                            return;
-                        }
-                        
-                        await gameRef.child('world/pollution').child(pollutionHere.id).remove();
-                        console.log('Successfully removed pollution from Firebase');
-                        
-                        player.pollutionCleaned++;
-                        player.impact += 15;
-                        await gameRef.child('players').child(playerId).update({
-                            pollutionCleaned: player.pollutionCleaned,
-                            impact: player.impact
-                        });
-                        
-                        const newHealth = Math.min(100, ecosystemHealth + 1.5);
-                        await gameRef.child('world/health').set(newHealth);
-                        
-                        showStatus('🧹 Pollution cleaned!', 'success');
-                        setTimeout(() => {
-                            document.getElementById('statusMessage').style.display = 'none';
-                        }, 2000);
-                        updatePlayersList();
-                    } catch (error) {
-                        console.error('Error cleaning pollution:', error);
-                        console.error('Error details:', error.message);
-                        console.error('Pollution object:', pollutionHere);
-                        showStatus('🚫 Error: ' + error.message, 'error');
-                        setTimeout(() => {
-                            document.getElementById('statusMessage').style.display = 'none';
-                        }, 3000);
-                    }
-                } else {
-                    console.log('No pollution found at this location');
+            if (!tile) return;
+            
+            if (action === 'tree') {
+                // Check if tree already exists
+                const treeExists = trees.some(t => t.gridX === playerGridX && t.gridY === playerGridY);
+                if (treeExists) {
+                    showStatus('🚫 Tree already exists here!', 'error');
+                    setTimeout(() => {
+                        document.getElementById('statusMessage').style.display = 'none';
+                    }, 2000);
+                    return;
                 }
                 
-            } else if (action === 'tree') {
-                // Check if tree already exists WHERE YOU ARE STANDING
-                const existingTree = trees.find(t => t.gridX === playerGridX && t.gridY === playerGridY);
-                
-                if (existingTree) {
-                    // REMOVE the tree
-                    console.log('Attempting to remove tree at', playerGridX, playerGridY);
-                    
-                    const treeId = `tree_${playerGridX}_${playerGridY}`;
-                    
-                    try {
-                        await gameRef.child('world/trees').child(treeId).remove();
-                        console.log('Tree removed from Firebase:', treeId);
-                        showStatus('🌳 Tree removed!', 'success');
-                        setTimeout(() => {
-                            document.getElementById('statusMessage').style.display = 'none';
-                        }, 2000);
-                    } catch (error) {
-                        console.error('Error removing tree:', error);
-                        showStatus('🚫 Error removing tree!', 'error');
-                        setTimeout(() => {
-                            document.getElementById('statusMessage').style.display = 'none';
-                        }, 2000);
-                    }
+                // Check if solar panel exists
+                const solarExists = solarPanels.some(s => s.gridX === playerGridX && s.gridY === playerGridY);
+                if (solarExists) {
+                    showStatus('🚫 Cannot plant tree where solar panel exists!', 'error');
+                    setTimeout(() => {
+                        document.getElementById('statusMessage').style.display = 'none';
+                    }, 2000);
                     return;
-                } else {
-                    // PLACE a new tree
-                    // Can't place trees on water
-                    if (tile.type === 'water' || tile.type === 'polluted_water') {
-                        showStatus('🚫 Cannot plant trees on water!', 'error');
-                        setTimeout(() => {
-                            document.getElementById('statusMessage').style.display = 'none';
-                        }, 2000);
-                        return;
-                    }
+                }
+                
+                // Can't plant on water
+                if (tile.type === 'water' || tile.type === 'polluted_water') {
+                    showStatus('🚫 Cannot plant trees on water!', 'error');
+                    setTimeout(() => {
+                        document.getElementById('statusMessage').style.display = 'none';
+                    }, 2000);
+                    return;
+                }
+                
+                const treeId = `tree_${playerGridX}_${playerGridY}`;
+                await gameRef.child('world/trees').child(treeId).set({
+                    x: playerGridX * TILE_SIZE + TILE_SIZE/2,
+                    y: playerGridY * TILE_SIZE + TILE_SIZE/2,
+                    gridX: playerGridX,
+                    gridY: playerGridY
+                });
+                
+                player.treesPlanted++;
+                player.impact += 5;
+                await gameRef.child('players').child(playerId).update({
+                    treesPlanted: player.treesPlanted,
+                    impact: player.impact
+                });
+                
+                const newHealth = Math.min(100, ecosystemHealth + 5);
+                await gameRef.child('world/health').set(newHealth);
+                
+                showStatus('🌳 Tree planted!', 'success');
+                setTimeout(() => {
+                    document.getElementById('statusMessage').style.display = 'none';
+                }, 2000);
+                
+                // Update leaderboard immediately
+                updatePlayersList();
+            }
+            else if (action === 'cleanup') {
+                const nearbyPollution = pollution.find(p => {
+                    const dx = p.x - player.x;
+                    const dy = p.y - player.y;
+                    return Math.sqrt(dx*dx + dy*dy) < TILE_SIZE;
+                });
+                
+                if (nearbyPollution) {
+                    await gameRef.child('world/pollution').child(nearbyPollution.id).remove();
                     
-                    // Can't place tree if solar already exists here
-                    const solarExists = solarPanels.some(s => s.gridX === playerGridX && s.gridY === playerGridY);
-                    if (solarExists) {
-                        showStatus('🚫 Cannot plant tree where solar panel exists!', 'error');
-                        setTimeout(() => {
-                            document.getElementById('statusMessage').style.display = 'none';
-                        }, 2000);
-                        return;
-                    }
-                    
-                    const treeId = `tree_${playerGridX}_${playerGridY}`;
-                    await gameRef.child('world/trees').child(treeId).set({
-                        x: playerGridX * TILE_SIZE + TILE_SIZE/2,
-                        y: playerGridY * TILE_SIZE + TILE_SIZE/2,
-                        gridX: playerGridX,
-                        gridY: playerGridY
-                    });
-                    
-                    player.treesPlanted++;
-                    player.impact += 10;
+                    player.pollutionCleaned++;
+                    player.impact += 3;
                     await gameRef.child('players').child(playerId).update({
-                        treesPlanted: player.treesPlanted,
+                        pollutionCleaned: player.pollutionCleaned,
                         impact: player.impact
                     });
                     
-                    const newHealth = Math.min(100, ecosystemHealth + 0.8);
+                    const newHealth = Math.min(100, ecosystemHealth + 3);
                     await gameRef.child('world/health').set(newHealth);
+                    
+                    showStatus('🧹 Pollution cleaned!', 'success');
+                    setTimeout(() => {
+                        document.getElementById('statusMessage').style.display = 'none';
+                    }, 2000);
                     
                     // Update leaderboard immediately
                     updatePlayersList();
+                } else {
+                    showStatus('🚫 No pollution nearby!', 'error');
+                    setTimeout(() => {
+                        document.getElementById('statusMessage').style.display = 'none';
+                    }, 2000);
                 }
+            }
+            else if (action === 'solar') {
+                // Check if solar panel already exists
+                const solarExists = solarPanels.some(s => s.gridX === playerGridX && s.gridY === playerGridY);
                 
-            } else if (action === 'solar') {
-                // Check if solar panel already exists WHERE YOU ARE STANDING
-                const existingSolar = solarPanels.find(s => s.gridX === playerGridX && s.gridY === playerGridY);
-                
-                if (existingSolar) {
-                    // REMOVE the solar panel
-                    console.log('Attempting to remove solar at', playerGridX, playerGridY);
-                    
+                if (solarExists) {
+                    // REMOVE existing solar panel
                     const solarId = `solar_${playerGridX}_${playerGridY}`;
-                    
                     try {
                         await gameRef.child('world/solar').child(solarId).remove();
                         console.log('Solar removed from Firebase:', solarId);
@@ -1354,6 +1181,11 @@
                     
                     const newHealth = Math.min(100, ecosystemHealth + 0.4);
                     await gameRef.child('world/health').set(newHealth);
+                    
+                    showStatus('☀️ Solar panel deployed!', 'success');
+                    setTimeout(() => {
+                        document.getElementById('statusMessage').style.display = 'none';
+                    }, 2000);
                     
                     // Update leaderboard immediately
                     updatePlayersList();
@@ -1505,7 +1337,15 @@
         
         document.getElementById('nameInput').focus();
         
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            stopPollutionSpawning();
+        });
+        
         } // End of setupGame function
+        
+        // Start the game
+        setupGame();
     </script>
 
     <!-- Visitor Counter (non-intrusive, fixed bottom-left) -->
