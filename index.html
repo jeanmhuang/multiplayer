@@ -223,7 +223,7 @@
         
         #hud {
             position: absolute;
-            top: 20px;
+            bottom: 100px;
             left: 20px;
             color: white;
             background: rgba(0, 0, 0, 0.8);
@@ -269,7 +269,8 @@
         #health {
             position: absolute;
             top: 20px;
-            right: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
             padding: 20px;
             border-radius: 12px;
@@ -367,8 +368,7 @@
         #instructionsBtn {
             position: absolute;
             top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            right: 20px;
             padding: 12px 24px;
             font-size: 16px;
             font-weight: bold;
@@ -383,7 +383,7 @@
         }
         
         #instructionsBtn:hover {
-            transform: translateX(-50%) translateY(-2px);
+            transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
         }
         
@@ -472,8 +472,8 @@
         
         #leaderboard {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
+            top: 20px;
+            left: 20px;
             background: rgba(0, 0, 0, 0.8);
             padding: 20px;
             border-radius: 12px;
@@ -533,6 +533,61 @@
         #leaderboard::-webkit-scrollbar-thumb {
             background: #fbbf24;
             border-radius: 10px;
+        }
+        
+        #educationPanel {
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #06b6d4;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            min-width: 320px;
+            max-width: 350px;
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
+        }
+        
+        #educationPanel h3 {
+            color: #06b6d4;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 18px;
+            border-bottom: 2px solid #06b6d4;
+            padding-bottom: 10px;
+        }
+        
+        .fact-content {
+            color: white;
+            line-height: 1.6;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .fact-category {
+            display: inline-block;
+            background: rgba(6, 182, 212, 0.3);
+            color: #06b6d4;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border: 1px solid #06b6d4;
+        }
+        
+        .fact-stat {
+            background: rgba(6, 182, 212, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 3px solid #06b6d4;
+        }
+        
+        .fact-stat strong {
+            color: #4ade80;
         }
     </style>
 </head>
@@ -614,9 +669,9 @@
             
             <h3>🌱 Actions</h3>
             <ul>
-                <li><strong>🌳 Plant Trees:</strong> Adds +5 health, +5 impact</li>
+                <li><strong>🌳 Plant Trees:</strong> Adds +5 health, +5 impact. Press again on tree to remove it!</li>
                 <li><strong>🧹 Clean Pollution:</strong> Removes pollution, +3 health, +3 impact</li>
-                <li><strong>☀️ Deploy Solar:</strong> Clean energy, +0.4 health, +8 impact</li>
+                <li><strong>☀️ Deploy Solar:</strong> Clean energy, +0.4 health, +8 impact. Press again to remove panel!</li>
             </ul>
             
             <h3>💡 Tips</h3>
@@ -626,6 +681,7 @@
                 <li>Solar panels can't be placed on water or where trees exist</li>
                 <li>Watch the leaderboard to see top contributors</li>
                 <li>Pollution now spawns continuously - keep the world clean!</li>
+                <li><strong>📚 Learn real climate facts</strong> in the bottom-right panel as you play!</li>
             </ul>
             
             <button class="close-btn" onclick="hideInstructions()">Got It!</button>
@@ -641,6 +697,15 @@
     <div id="leaderboard" style="display: none;">
         <h3>🏆 Top Contributors</h3>
         <div id="playersList"></div>
+    </div>
+    
+    <div id="educationPanel" style="display: none;">
+        <h3>💡 Climate Facts</h3>
+        <div id="factContent">
+            <div class="fact-category" id="factCategory">🌍 Loading...</div>
+            <div class="fact-content" id="factText">Loading climate fact...</div>
+            <div class="fact-stat" id="factStat"></div>
+        </div>
     </div>
     
     <div id="statusMessage" class="status-message" style="display: none;"></div>
@@ -704,6 +769,130 @@
         const MAX_POLLUTION = 80; // Maximum pollution on map
         const MIN_POLLUTION = 20; // Minimum pollution to maintain
         let pollutionSpawnTimer = null;
+        
+        // Educational facts database
+        const CLIMATE_FACTS = {
+            trees: [
+                {
+                    text: "A single mature tree can absorb 48 pounds of CO2 per year and release enough oxygen for 2 people!",
+                    stat: "🌳 1 tree = 2 people's oxygen needs",
+                    category: "🌳 Trees & Forests"
+                },
+                {
+                    text: "Trees can reduce air temperature by up to 10°F through shade and water evaporation. Urban forests are natural air conditioners!",
+                    stat: "🌡️ Trees cool cities by up to 10°F",
+                    category: "🌳 Trees & Forests"
+                },
+                {
+                    text: "The Amazon rainforest produces 20% of the world's oxygen and stores 150-200 billion tons of carbon.",
+                    stat: "🌲 Amazon = 20% of Earth's oxygen",
+                    category: "🌳 Trees & Forests"
+                },
+                {
+                    text: "Planting 1.2 trillion trees could capture 205 gigatons of CO2 - that's 2/3 of human-caused carbon emissions!",
+                    stat: "🌍 Potential: 205 gigatons CO2 captured",
+                    category: "🌳 Trees & Forests"
+                }
+            ],
+            pollution: [
+                {
+                    text: "Air pollution causes 7 million premature deaths worldwide each year. Clean air saves lives!",
+                    stat: "⚠️ 7 million deaths/year from air pollution",
+                    category: "🏭 Pollution & Health"
+                },
+                {
+                    text: "Ocean plastic pollution kills over 100,000 marine animals yearly. By 2050, there could be more plastic than fish in the ocean by weight.",
+                    stat: "🌊 100,000+ marine animals die yearly",
+                    category: "🏭 Pollution & Health"
+                },
+                {
+                    text: "Switching from coal to clean energy could prevent 3.6 million air pollution deaths per year globally.",
+                    stat: "💚 Clean energy = 3.6M lives saved/year",
+                    category: "🏭 Pollution & Health"
+                },
+                {
+                    text: "Indoor air can be 2-5 times more polluted than outdoor air. Plants can help clean indoor air naturally!",
+                    stat: "🏠 Indoor air: 2-5x more polluted",
+                    category: "🏭 Pollution & Health"
+                }
+            ],
+            solar: [
+                {
+                    text: "Solar energy is now the cheapest electricity in history! Costs have dropped 90% in the last decade.",
+                    stat: "☀️ 90% cost reduction in 10 years",
+                    category: "☀️ Solar Energy"
+                },
+                {
+                    text: "The sun provides Earth with more energy in one hour than humanity uses in an entire year!",
+                    stat: "⚡ 1 hour of sun = 1 year of human energy use",
+                    category: "☀️ Solar Energy"
+                },
+                {
+                    text: "A typical residential solar panel system can offset 100 tons of CO2 over 25 years - equal to planting 2,500 trees!",
+                    stat: "🏠 Solar system = 2,500 trees planted",
+                    category: "☀️ Solar Energy"
+                },
+                {
+                    text: "Global solar capacity has grown from 1.4 GW in 2000 to over 1,000 GW today - a 700x increase!",
+                    stat: "📈 700x growth since 2000",
+                    category: "☀️ Solar Energy"
+                }
+            ],
+            climate: [
+                {
+                    text: "Global temperatures have risen 1.1°C since 1880. The last 8 years were the warmest on record.",
+                    stat: "🌡️ +1.1°C since 1880",
+                    category: "🌍 Climate Change"
+                },
+                {
+                    text: "Arctic sea ice is declining at 13% per decade. We've lost 75% of summer sea ice volume since the 1980s.",
+                    stat: "🧊 75% Arctic ice loss since 1980s",
+                    category: "🌍 Climate Change"
+                },
+                {
+                    text: "Renewable energy creates 3x more jobs than fossil fuels per dollar invested. Green jobs are the future!",
+                    stat: "💼 3x more jobs from renewables",
+                    category: "🌍 Climate Change"
+                },
+                {
+                    text: "If everyone in the US replaced one beef meal per week with beans, it would equal taking 7 million cars off the road!",
+                    stat: "🌱 Food choices = 7M fewer cars",
+                    category: "🌍 Climate Change"
+                },
+                {
+                    text: "Limiting warming to 1.5°C instead of 2°C could save 10 million people from climate risks by 2100.",
+                    stat: "🎯 1.5°C goal = 10M people saved",
+                    category: "🌍 Climate Change"
+                }
+            ],
+            action: [
+                {
+                    text: "You can make a difference! Top personal actions: eat more plants, fly less, switch to renewables, and use public transport.",
+                    stat: "🎯 Your choices matter!",
+                    category: "💪 Take Action"
+                },
+                {
+                    text: "Electric vehicles produce 50-70% less emissions over their lifetime than gas cars, even accounting for battery production!",
+                    stat: "🚗 EVs: 50-70% fewer emissions",
+                    category: "💪 Take Action"
+                },
+                {
+                    text: "Composting food waste prevents methane emissions and creates nutrient-rich soil. 30% of landfill waste is food!",
+                    stat: "♻️ Composting prevents 30% of waste",
+                    category: "💪 Take Action"
+                },
+                {
+                    text: "LED bulbs use 75% less energy than incandescent bulbs and last 25x longer. Small changes add up!",
+                    stat: "💡 LEDs: 75% energy savings",
+                    category: "💪 Take Action"
+                }
+            ]
+        };
+        
+        let currentFactIndex = 0;
+        let currentFactCategory = 'climate';
+        const FACT_ROTATION_INTERVAL = 20000; // Change fact every 20 seconds
+        let factRotationTimer = null;
         
         // Tile colors
         const TILE_COLORS = {
@@ -886,6 +1075,57 @@
             }
         }
         
+        // Educational facts system
+        function showFact(category = null) {
+            // If no category specified, rotate through all categories
+            if (!category) {
+                const categories = ['climate', 'trees', 'pollution', 'solar', 'action'];
+                currentFactCategory = categories[Math.floor(Math.random() * categories.length)];
+            } else {
+                currentFactCategory = category;
+            }
+            
+            const facts = CLIMATE_FACTS[currentFactCategory];
+            const fact = facts[Math.floor(Math.random() * facts.length)];
+            
+            document.getElementById('factCategory').textContent = fact.category;
+            document.getElementById('factText').textContent = fact.text;
+            document.getElementById('factStat').innerHTML = `<strong>${fact.stat}</strong>`;
+            
+            console.log('📚 Showing fact:', fact.category);
+        }
+        
+        function startFactRotation() {
+            // Show initial fact
+            showFact();
+            
+            // Rotate facts periodically
+            factRotationTimer = setInterval(() => {
+                showFact();
+            }, FACT_ROTATION_INTERVAL);
+            
+            console.log('📚 Started fact rotation');
+        }
+        
+        function stopFactRotation() {
+            if (factRotationTimer) {
+                clearInterval(factRotationTimer);
+                factRotationTimer = null;
+                console.log('🛑 Stopped fact rotation');
+            }
+        }
+        
+        // Show relevant fact based on action
+        function showActionFact(actionType) {
+            if (actionType === 'tree') {
+                showFact('trees');
+            } else if (actionType === 'cleanup') {
+                showFact('pollution');
+            } else if (actionType === 'solar') {
+                showFact('solar');
+            }
+        }
+        
         // Initialize game
         async function init() {
             console.log('🚀 Starting game initialization...');
@@ -1043,11 +1283,16 @@
                 document.getElementById('health').style.display = 'block';
                 document.getElementById('actionButtons').style.display = 'flex';
                 document.getElementById('leaderboard').style.display = 'block';
+                document.getElementById('educationPanel').style.display = 'block';
                 document.getElementById('instructionsBtn').style.display = 'block';
                 
                 // Start pollution spawning
                 console.log('🏭 Starting pollution spawning...');
                 startPollutionSpawning();
+                
+                // Start educational facts rotation
+                console.log('📚 Starting educational facts...');
+                startFactRotation();
                 
                 console.log('✅ Starting game loop...');
                 gameLoop();
@@ -1093,14 +1338,32 @@
             
             if (action === 'tree') {
                 // Check if tree already exists
-                const treeExists = trees.some(t => t.gridX === playerGridX && t.gridY === playerGridY);
-                if (treeExists) {
-                    showStatus('🚫 Tree already exists here!', 'error');
-                    setTimeout(() => {
-                        document.getElementById('statusMessage').style.display = 'none';
-                    }, 2000);
+                const existingTree = trees.find(t => t.gridX === playerGridX && t.gridY === playerGridY);
+                
+                if (existingTree) {
+                    // REMOVE the existing tree
+                    console.log('Attempting to remove tree at', playerGridX, playerGridY);
+                    
+                    const treeId = `tree_${playerGridX}_${playerGridY}`;
+                    
+                    try {
+                        await gameRef.child('world/trees').child(treeId).remove();
+                        console.log('Tree removed from Firebase:', treeId);
+                        showStatus('🌳 Tree removed!', 'success');
+                        setTimeout(() => {
+                            document.getElementById('statusMessage').style.display = 'none';
+                        }, 2000);
+                    } catch (error) {
+                        console.error('Error removing tree:', error);
+                        showStatus('🚫 Error removing tree!', 'error');
+                        setTimeout(() => {
+                            document.getElementById('statusMessage').style.display = 'none';
+                        }, 2000);
+                    }
                     return;
                 }
+                
+                // No tree exists, so PLANT a new tree
                 
                 // Check if solar panel exists
                 const solarExists = solarPanels.some(s => s.gridX === playerGridX && s.gridY === playerGridY);
@@ -1144,6 +1407,9 @@
                     document.getElementById('statusMessage').style.display = 'none';
                 }, 2000);
                 
+                // Show tree-related fact
+                showActionFact('tree');
+                
                 // Update leaderboard immediately
                 updatePlayersList();
             }
@@ -1171,6 +1437,9 @@
                     setTimeout(() => {
                         document.getElementById('statusMessage').style.display = 'none';
                     }, 2000);
+                    
+                    // Show pollution-related fact
+                    showActionFact('cleanup');
                     
                     // Update leaderboard immediately
                     updatePlayersList();
@@ -1246,6 +1515,9 @@
                     setTimeout(() => {
                         document.getElementById('statusMessage').style.display = 'none';
                     }, 2000);
+                    
+                    // Show solar-related fact
+                    showActionFact('solar');
                     
                     // Update leaderboard immediately
                     updatePlayersList();
@@ -1400,6 +1672,7 @@
         // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
             stopPollutionSpawning();
+            stopFactRotation();
         });
         
         } // End of setupGame function
