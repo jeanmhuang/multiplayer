@@ -224,7 +224,7 @@
         #hud {
             position: absolute;
             bottom: 100px;
-            left: 20px;
+            right: 20px;
             color: white;
             background: rgba(0, 0, 0, 0.8);
             padding: 20px;
@@ -472,7 +472,7 @@
         
         #leaderboard {
             position: absolute;
-            top: 110px;
+            top: 20px;
             left: 20px;
             background: rgba(0, 0, 0, 0.8);
             padding: 20px;
@@ -481,7 +481,7 @@
             backdrop-filter: blur(10px);
             z-index: 100;
             min-width: 250px;
-            max-height: 300px;
+            max-height: 250px;
             overflow-y: auto;
         }
         
@@ -538,7 +538,7 @@
         #educationPanel {
             position: absolute;
             bottom: 100px;
-            right: 20px;
+            left: 20px;
             background: rgba(0, 0, 0, 0.85);
             padding: 20px;
             border-radius: 12px;
@@ -732,6 +732,15 @@
         
         console.log('✅ Firebase initialized successfully!');
         console.log('🌍 Climate Champions ready to start!');
+        
+        // Instructions modal functions (global scope for onclick handlers)
+        function showInstructions() {
+            document.getElementById('instructionsModal').style.display = 'flex';
+        }
+        
+        function hideInstructions() {
+            document.getElementById('instructionsModal').style.display = 'none';
+        }
         
         function setupGame() {
         const canvas = document.getElementById('gameCanvas');
@@ -967,15 +976,6 @@
             statusEl.textContent = message;
             statusEl.className = 'status-message ' + type + '-message';
             statusEl.style.display = 'block';
-        }
-        
-        // Instructions modal
-        function showInstructions() {
-            document.getElementById('instructionsModal').style.display = 'flex';
-        }
-        
-        function hideInstructions() {
-            document.getElementById('instructionsModal').style.display = 'none';
         }
         
         // Update players list
