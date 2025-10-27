@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Climate Champions - Climate Action Game</title>
-
+    <title>Climate Champions - Real Multiplayer</title>
     <style>
         * {
             margin: 0;
@@ -34,21 +33,33 @@
             justify-content: center;
             align-items: center;
             color: white;
+            z-index: 1000;
         }
         
         #startScreen h1 {
             font-size: 64px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             color: #4ade80;
             text-shadow: 0 0 30px rgba(74, 222, 128, 0.5);
             letter-spacing: 2px;
         }
         
         .subtitle {
-            font-size: 24px;
+            font-size: 20px;
             color: #93c5fd;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
             font-weight: 300;
+        }
+        
+        .multiplayer-badge {
+            background: rgba(74, 222, 128, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 2px solid #4ade80;
+            margin-bottom: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #4ade80;
         }
         
         .mission {
@@ -116,15 +127,42 @@
             box-shadow: 0 5px 20px rgba(74, 222, 128, 0.4);
         }
         
-        #startButton:hover {
+        #startButton:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: 0 8px 30px rgba(74, 222, 128, 0.6);
         }
         
+        #startButton:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(251, 191, 36, 0.2);
+            border: 2px solid #fbbf24;
+            border-radius: 8px;
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .error-message {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        
+        .success-message {
+            background: rgba(74, 222, 128, 0.2);
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+        
         .controls {
-            margin-top: 25px;
+            margin-top: 20px;
             color: #cbd5e1;
-            font-size: 15px;
+            font-size: 14px;
             text-align: center;
         }
         
@@ -170,6 +208,59 @@
             font-weight: bold;
             color: #4ade80;
             font-size: 17px;
+        }
+        
+        #onlinePlayers {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 20px;
+            border-radius: 12px;
+            border: 3px solid #4ade80;
+            color: white;
+            min-width: 240px;
+            backdrop-filter: blur(10px);
+        }
+        
+        #onlinePlayers h3 {
+            margin-bottom: 12px;
+            text-align: center;
+            color: #4ade80;
+            border-bottom: 2px solid #4ade80;
+            padding-bottom: 8px;
+            font-size: 18px;
+        }
+        
+        .player-entry {
+            padding: 8px;
+            margin: 6px 0;
+            font-size: 14px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .player-entry.you {
+            background: rgba(74, 222, 128, 0.25);
+            font-weight: bold;
+            border: 2px solid #4ade80;
+        }
+        
+        .player-status {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
         #impactMeter {
@@ -218,49 +309,6 @@
             font-weight: bold;
             font-size: 13px;
             text-shadow: 1px 1px 3px black;
-        }
-        
-        #leaderboard {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.75);
-            padding: 20px;
-            border-radius: 12px;
-            border: 3px solid #4ade80;
-            color: white;
-            min-width: 240px;
-            backdrop-filter: blur(10px);
-        }
-        
-        #leaderboard h3 {
-            margin-bottom: 12px;
-            text-align: center;
-            color: #4ade80;
-            border-bottom: 2px solid #4ade80;
-            padding-bottom: 8px;
-            font-size: 18px;
-        }
-        
-        .leaderboard-entry {
-            padding: 8px;
-            margin: 6px 0;
-            font-size: 14px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .leaderboard-entry.player {
-            background: rgba(74, 222, 128, 0.25);
-            font-weight: bold;
-            border: 2px solid #4ade80;
-        }
-        
-        .rank {
-            color: #fbbf24;
-            font-weight: bold;
-            margin-right: 8px;
         }
         
         #actions {
@@ -330,7 +378,8 @@
     
     <div id="startScreen">
         <h1>🌍 CLIMATE CHAMPIONS 🌍</h1>
-        <div class="subtitle">Restore the Planet • Combat Climate Change</div>
+        <div class="subtitle">Real-Time Multiplayer Climate Action</div>
+        <div class="multiplayer-badge">🌐 PLAY WITH FRIENDS WORLDWIDE</div>
         
         <div class="mission">
             <h3>YOUR MISSION:</h3>
@@ -338,13 +387,14 @@
                 <li>Plant trees to absorb CO₂ and restore forests</li>
                 <li>Clean up pollution from land and water</li>
                 <li>Deploy solar panels for renewable energy</li>
-                <li>Protect ecosystems from environmental threats</li>
-                <li>Compete with other guardians to heal the Earth!</li>
+                <li>Compete with other champions to heal the Earth!</li>
             </ul>
         </div>
         
         <input type="text" id="nameInput" placeholder="Enter Champion Name" maxlength="12">
-        <button id="startButton">START MISSION</button>
+        <button id="startButton">JOIN GAME</button>
+        
+        <div id="statusMessage" style="display: none;"></div>
         
         <div class="controls">
             <div>🎮 <strong>WASD / Arrow Keys</strong> - Move</div>
@@ -382,9 +432,9 @@
         </div>
     </div>
     
-    <div id="leaderboard" style="display: none;">
-        <h3>🏆 TOP GUARDIANS</h3>
-        <div id="leaderboardContent"></div>
+    <div id="onlinePlayers" style="display: none;">
+        <h3>👥 ONLINE CHAMPIONS</h3>
+        <div id="playersList"></div>
     </div>
     
     <div id="actions" style="display: none;">
@@ -402,6 +452,10 @@
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -414,25 +468,35 @@
             canvas.height = window.innerHeight;
         });
         
+        // Firebase configuration - HARDCODED
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnec7-hhj7kcxlS3HOrRGdP3VgOxAeEXY",
+            databaseURL: "https://climate-champions-8e318-default-rtdb.firebaseio.com"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const gameRef = database.ref('game');
+        
+        // Firebase and multiplayer state
+        let playerId = null;
+        let connectedPlayers = {};
+        
         // Game constants
         const WORLD_SIZE = 3500;
         const TILE_SIZE = 50;
         const PLAYER_SIZE = 20;
-        const BOT_COUNT = 6;
-        const POLLUTION_COUNT = 100;
-        const INITIAL_HEALTH = 30;
         
         // Game state
         let gameStarted = false;
         let keys = {};
         let camera = { x: 0, y: 0 };
         let currentAction = 'tree';
-        let ecosystemHealth = INITIAL_HEALTH;
-        let healthIncrease = 0;
+        let ecosystemHealth = 30;
         
         // Game objects
         let player = null;
-        let bots = [];
         let tiles = [];
         let pollution = [];
         let trees = [];
@@ -449,162 +513,51 @@
             polluted_land: '#4a4a4a'
         };
         
+        const PLAYER_COLORS = ['#4ade80', '#10b981', '#059669', '#84cc16', '#22d3ee', '#06b6d4', '#8b5cf6', '#a855f7'];
+        
+        // Show status message
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = 'status-message';
+            if (type === 'error') statusEl.classList.add('error-message');
+            if (type === 'success') statusEl.classList.add('success-message');
+            statusEl.style.display = 'block';
+        }
+        
         // Champion class
         class Champion {
-            constructor(x, y, name, color, isPlayer = false) {
-                this.x = x;
-                this.y = y;
-                this.vx = 0;
-                this.vy = 0;
-                this.name = name;
-                this.color = color;
-                this.isPlayer = isPlayer;
-                this.size = PLAYER_SIZE;
-                this.treesPlanted = 0;
-                this.pollutionCleaned = 0;
-                this.solarDeployed = 0;
-                this.impact = 0;
-                this.actionCooldown = 0;
-            }
-            
-            update() {
-                if (this.isPlayer) {
-                    const speed = 4;
-                    if (keys['w'] || keys['W'] || keys['ArrowUp']) this.vy = -speed;
-                    else if (keys['s'] || keys['S'] || keys['ArrowDown']) this.vy = speed;
-                    else this.vy *= 0.85;
-                    
-                    if (keys['a'] || keys['A'] || keys['ArrowLeft']) this.vx = -speed;
-                    else if (keys['d'] || keys['D'] || keys['ArrowRight']) this.vx = speed;
-                    else this.vx *= 0.85;
-                } else {
-                    // Bot AI
-                    if (Math.random() < 0.02) {
-                        // Find nearest pollution or good spot
-                        let target = null;
-                        let minDist = Infinity;
-                        
-                        for (let p of pollution) {
-                            const dist = Math.hypot(p.x - this.x, p.y - this.y);
-                            if (dist < minDist) {
-                                minDist = dist;
-                                target = p;
-                            }
-                        }
-                        
-                        if (target) {
-                            this.targetX = target.x;
-                            this.targetY = target.y;
-                            this.nextAction = 'cleanup';
-                        } else if (Math.random() < 0.5) {
-                            this.targetX = Math.random() * WORLD_SIZE;
-                            this.targetY = Math.random() * WORLD_SIZE;
-                            this.nextAction = Math.random() < 0.7 ? 'tree' : 'solar';
-                        }
-                    }
-                    
-                    if (this.targetX !== undefined) {
-                        const dx = this.targetX - this.x;
-                        const dy = this.targetY - this.y;
-                        const dist = Math.hypot(dx, dy);
-                        
-                        if (dist > 5) {
-                            this.vx = (dx / dist) * 3.5;
-                            this.vy = (dy / dist) * 3.5;
-                        } else if (this.actionCooldown === 0 && this.nextAction) {
-                            this.performAction(this.nextAction);
-                            this.targetX = undefined;
-                        }
-                    }
-                }
-                
-                this.x += this.vx;
-                this.y += this.vy;
-                
-                // Keep in bounds
-                this.x = Math.max(this.size, Math.min(WORLD_SIZE - this.size, this.x));
-                this.y = Math.max(this.size, Math.min(WORLD_SIZE - this.size, this.y));
-                
-                if (this.actionCooldown > 0) this.actionCooldown--;
-            }
-            
-            performAction(action) {
-                if (this.actionCooldown > 0) return false;
-                
-                const gridX = Math.floor(this.x / TILE_SIZE);
-                const gridY = Math.floor(this.y / TILE_SIZE);
-                
-                if (action === 'tree') {
-                    // Check if tile can have tree
-                    const tile = getTile(gridX, gridY);
-                    if (tile && (tile.type === 'grass' || tile.type === 'dirt') && 
-                        !hasTree(gridX, gridY) && !hasSolar(gridX, gridY)) {
-                        trees.push({ x: gridX * TILE_SIZE + TILE_SIZE/2, y: gridY * TILE_SIZE + TILE_SIZE/2, age: 0, gridX, gridY });
-                        this.treesPlanted++;
-                        this.impact += 10;
-                        this.actionCooldown = 30;
-                        createParticles(this.x, this.y, '#22c55e', 5);
-                        healthIncrease += 0.5;
-                        return true;
-                    }
-                } else if (action === 'cleanup') {
-                    // Check for nearby pollution
-                    for (let i = pollution.length - 1; i >= 0; i--) {
-                        const p = pollution[i];
-                        if (Math.hypot(p.x - this.x, p.y - this.y) < 40) {
-                            const tile = getTile(Math.floor(p.x / TILE_SIZE), Math.floor(p.y / TILE_SIZE));
-                            if (tile) {
-                                if (tile.type === 'polluted_water') tile.type = 'water';
-                                else if (tile.type === 'polluted_land') tile.type = 'grass';
-                            }
-                            pollution.splice(i, 1);
-                            this.pollutionCleaned++;
-                            this.impact += 15;
-                            this.actionCooldown = 20;
-                            createParticles(p.x, p.y, '#3b82f6', 8);
-                            healthIncrease += 0.8;
-                            return true;
-                        }
-                    }
-                } else if (action === 'solar') {
-                    const tile = getTile(gridX, gridY);
-                    if (tile && tile.type !== 'water' && tile.type !== 'polluted_water' && 
-                        !hasTree(gridX, gridY) && !hasSolar(gridX, gridY)) {
-                        solarPanels.push({ x: gridX * TILE_SIZE + TILE_SIZE/2, y: gridY * TILE_SIZE + TILE_SIZE/2, gridX, gridY });
-                        this.solarDeployed++;
-                        this.impact += 8;
-                        this.actionCooldown = 25;
-                        createParticles(this.x, this.y, '#fbbf24', 5);
-                        healthIncrease += 0.4;
-                        return true;
-                    }
-                }
-                return false;
+            constructor(id, data) {
+                this.id = id;
+                this.x = data.x || WORLD_SIZE / 2;
+                this.y = data.y || WORLD_SIZE / 2;
+                this.name = data.name || 'Champion';
+                this.color = data.color || '#4ade80';
+                this.treesPlanted = data.treesPlanted || 0;
+                this.pollutionCleaned = data.pollutionCleaned || 0;
+                this.solarDeployed = data.solarDeployed || 0;
+                this.impact = data.impact || 0;
+                this.lastUpdate = data.lastUpdate || Date.now();
             }
             
             draw() {
                 ctx.save();
                 ctx.translate(this.x - camera.x, this.y - camera.y);
                 
-                // Draw guardian body
+                // Draw champion body
                 ctx.beginPath();
-                ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                ctx.arc(0, 0, PLAYER_SIZE, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
                 ctx.fill();
                 ctx.strokeStyle = '#fff';
                 ctx.lineWidth = 3;
                 ctx.stroke();
                 
-                // Draw current action icon
+                // Draw icon
                 ctx.font = '16px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                if (this.isPlayer) {
-                    const icon = currentAction === 'tree' ? '🌳' : currentAction === 'cleanup' ? '🧹' : '☀️';
-                    ctx.fillText(icon, 0, 0);
-                } else {
-                    ctx.fillText('🤖', 0, 0);
-                }
+                ctx.fillText(this.id === playerId ? '🌟' : '🌿', 0, 0);
                 
                 ctx.restore();
                 
@@ -614,8 +567,8 @@
                 ctx.textAlign = 'center';
                 ctx.strokeStyle = '#000';
                 ctx.lineWidth = 3;
-                ctx.strokeText(this.name, this.x - camera.x, this.y - camera.y - this.size - 10);
-                ctx.fillText(this.name, this.x - camera.x, this.y - camera.y - this.size - 10);
+                ctx.strokeText(this.name, this.x - camera.x, this.y - camera.y - PLAYER_SIZE - 10);
+                ctx.fillText(this.name, this.x - camera.x, this.y - camera.y - PLAYER_SIZE - 10);
             }
         }
         
@@ -643,83 +596,163 @@
             return tiles[y * cols + x];
         }
         
-        function hasTree(gridX, gridY) {
-            return trees.some(t => t.gridX === gridX && t.gridY === gridY);
+        // Initialize game
+        async function init() {
+            const playerName = document.getElementById('nameInput').value.trim() || 'Champion';
+            
+            try {
+                showStatus('Connecting to game...', 'info');
+                
+                // Generate player ID
+                playerId = 'player_' + Math.random().toString(36).substr(2, 9);
+                
+                // Get a unique color
+                const colorIndex = Object.keys(connectedPlayers).length % PLAYER_COLORS.length;
+                const playerColor = PLAYER_COLORS[colorIndex];
+                
+                // Initialize world
+                initTiles();
+                
+                // Add player to database
+                const playerData = {
+                    name: playerName,
+                    color: playerColor,
+                    x: WORLD_SIZE / 2 + (Math.random() - 0.5) * 200,
+                    y: WORLD_SIZE / 2 + (Math.random() - 0.5) * 200,
+                    treesPlanted: 0,
+                    pollutionCleaned: 0,
+                    solarDeployed: 0,
+                    impact: 0,
+                    lastUpdate: Date.now()
+                };
+                
+                await gameRef.child('players').child(playerId).set(playerData);
+                
+                player = new Champion(playerId, playerData);
+                
+                // Set up presence system
+                const playerRef = gameRef.child('players').child(playerId);
+                playerRef.onDisconnect().remove();
+                
+                // Listen for other players
+                gameRef.child('players').on('child_added', (snapshot) => {
+                    const id = snapshot.key;
+                    const data = snapshot.val();
+                    if (id !== playerId) {
+                        connectedPlayers[id] = new Champion(id, data);
+                    }
+                    updatePlayersList();
+                });
+                
+                gameRef.child('players').on('child_changed', (snapshot) => {
+                    const id = snapshot.key;
+                    const data = snapshot.val();
+                    if (id !== playerId && connectedPlayers[id]) {
+                        connectedPlayers[id] = new Champion(id, data);
+                    }
+                });
+                
+                gameRef.child('players').on('child_removed', (snapshot) => {
+                    const id = snapshot.key;
+                    delete connectedPlayers[id];
+                    updatePlayersList();
+                });
+                
+                // Listen for shared world state
+                gameRef.child('world/pollution').on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        pollution = Object.values(data);
+                    }
+                });
+                
+                gameRef.child('world/trees').on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        trees = Object.values(data);
+                    }
+                });
+                
+                gameRef.child('world/solar').on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        solarPanels = Object.values(data);
+                    }
+                });
+                
+                gameRef.child('world/health').on('value', (snapshot) => {
+                    const health = snapshot.val();
+                    if (health !== null) {
+                        ecosystemHealth = health;
+                    }
+                });
+                
+                // Initialize world state if first player
+                const worldSnapshot = await gameRef.child('world').once('value');
+                if (!worldSnapshot.exists()) {
+                    // Initialize pollution
+                    const pollutionData = {};
+                    for (let i = 0; i < 50; i++) {
+                        const id = 'pollution_' + i;
+                        pollutionData[id] = {
+                            x: Math.random() * WORLD_SIZE,
+                            y: Math.random() * WORLD_SIZE
+                        };
+                    }
+                    await gameRef.child('world/pollution').set(pollutionData);
+                    await gameRef.child('world/health').set(30);
+                }
+                
+                gameStarted = true;
+                document.getElementById('startScreen').style.display = 'none';
+                document.getElementById('hud').style.display = 'block';
+                document.getElementById('impactMeter').style.display = 'block';
+                document.getElementById('onlinePlayers').style.display = 'block';
+                document.getElementById('actions').style.display = 'flex';
+                
+                showStatus('Connected!', 'success');
+                
+                // Start sending position updates
+                setInterval(updatePlayerPosition, 50);
+                
+                gameLoop();
+            } catch (error) {
+                showStatus('Connection error: ' + error.message, 'error');
+                console.error(error);
+            }
         }
         
-        function hasSolar(gridX, gridY) {
-            return solarPanels.some(s => s.gridX === gridX && s.gridY === gridY);
-        }
-        
-        // Particle system
-        function createParticles(x, y, color, count) {
-            for (let i = 0; i < count; i++) {
-                particles.push({
-                    x, y,
-                    vx: (Math.random() - 0.5) * 4,
-                    vy: (Math.random() - 0.5) * 4,
-                    color,
-                    life: 30
+        // Update player position in database
+        function updatePlayerPosition() {
+            if (player && database) {
+                gameRef.child('players').child(playerId).update({
+                    x: player.x,
+                    y: player.y,
+                    lastUpdate: Date.now()
                 });
             }
         }
         
-        // Initialize game
-        function init() {
-            const playerName = document.getElementById('nameInput').value.trim() || 'Champion';
-            player = new Champion(WORLD_SIZE / 2, WORLD_SIZE / 2, playerName, '#4ade80', true);
+        // Update players list
+        function updatePlayersList() {
+            const listEl = document.getElementById('playersList');
+            listEl.innerHTML = '';
             
-            // Initialize world
-            initTiles();
+            const allPlayers = [player, ...Object.values(connectedPlayers)]
+                .filter(p => p)
+                .sort((a, b) => (b?.impact || 0) - (a?.impact || 0));
             
-            // Create pollution
-            pollution = [];
-            for (let i = 0; i < POLLUTION_COUNT; i++) {
-                const x = Math.random() * WORLD_SIZE;
-                const y = Math.random() * WORLD_SIZE;
-                const gridX = Math.floor(x / TILE_SIZE);
-                const gridY = Math.floor(y / TILE_SIZE);
-                const tile = getTile(gridX, gridY);
-                
-                if (tile) {
-                    if (tile.type === 'water') tile.type = 'polluted_water';
-                    else if (tile.type === 'grass' || tile.type === 'dirt') tile.type = 'polluted_land';
-                    pollution.push({ x, y });
+            allPlayers.forEach(p => {
+                if (p) {
+                    const entry = document.createElement('div');
+                    entry.className = 'player-entry' + (p.id === playerId ? ' you' : '');
+                    entry.innerHTML = `
+                        <span><span class="player-status"></span>${p.name}</span>
+                        <span>${p.impact || 0}</span>
+                    `;
+                    listEl.appendChild(entry);
                 }
-            }
-            
-            // Create some initial trees
-            for (let i = 0; i < 30; i++) {
-                const gridX = Math.floor(Math.random() * (WORLD_SIZE / TILE_SIZE));
-                const gridY = Math.floor(Math.random() * (WORLD_SIZE / TILE_SIZE));
-                const tile = getTile(gridX, gridY);
-                if (tile && tile.type === 'forest') {
-                    trees.push({ x: gridX * TILE_SIZE + TILE_SIZE/2, y: gridY * TILE_SIZE + TILE_SIZE/2, age: 100, gridX, gridY });
-                }
-            }
-            
-            // Create bots
-            bots = [];
-            const botNames = ['Flora', 'Terra', 'Gaia', 'Eco', 'Verde', 'Luna'];
-            const botColors = ['#10b981', '#059669', '#84cc16', '#65a30d', '#22d3ee', '#06b6d4'];
-            for (let i = 0; i < BOT_COUNT; i++) {
-                bots.push(new Champion(
-                    Math.random() * WORLD_SIZE,
-                    Math.random() * WORLD_SIZE,
-                    botNames[i],
-                    botColors[i],
-                    false
-                ));
-            }
-            
-            gameStarted = true;
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('hud').style.display = 'block';
-            document.getElementById('impactMeter').style.display = 'block';
-            document.getElementById('leaderboard').style.display = 'block';
-            document.getElementById('actions').style.display = 'flex';
-            
-            gameLoop();
+            });
         }
         
         // Set action
@@ -733,50 +766,101 @@
             else if (action === 'solar') document.querySelector('.action-button.solar').style.opacity = '1';
         }
         
+        // Perform action
+        async function performAction(action) {
+            if (!player || !database) return;
+            
+            const gridX = Math.floor(player.x / TILE_SIZE);
+            const gridY = Math.floor(player.y / TILE_SIZE);
+            
+            if (action === 'tree') {
+                const treeId = `tree_${gridX}_${gridY}`;
+                const exists = trees.some(t => t.gridX === gridX && t.gridY === gridY);
+                if (!exists) {
+                    await gameRef.child('world/trees').child(treeId).set({
+                        x: gridX * TILE_SIZE + TILE_SIZE/2,
+                        y: gridY * TILE_SIZE + TILE_SIZE/2,
+                        gridX, gridY,
+                        age: 0
+                    });
+                    
+                    player.treesPlanted++;
+                    player.impact += 10;
+                    await gameRef.child('players').child(playerId).update({
+                        treesPlanted: player.treesPlanted,
+                        impact: player.impact
+                    });
+                    
+                    const newHealth = Math.min(100, ecosystemHealth + 0.5);
+                    await gameRef.child('world/health').set(newHealth);
+                }
+            } else if (action === 'cleanup') {
+                for (let p of pollution) {
+                    if (Math.hypot(p.x - player.x, p.y - player.y) < 40) {
+                        // Remove from database
+                        const pollutionSnapshot = await gameRef.child('world/pollution').once('value');
+                        const pollutionData = pollutionSnapshot.val() || {};
+                        
+                        for (let [key, value] of Object.entries(pollutionData)) {
+                            if (Math.abs(value.x - p.x) < 1 && Math.abs(value.y - p.y) < 1) {
+                                await gameRef.child('world/pollution').child(key).remove();
+                                break;
+                            }
+                        }
+                        
+                        player.pollutionCleaned++;
+                        player.impact += 15;
+                        await gameRef.child('players').child(playerId).update({
+                            pollutionCleaned: player.pollutionCleaned,
+                            impact: player.impact
+                        });
+                        
+                        const newHealth = Math.min(100, ecosystemHealth + 0.8);
+                        await gameRef.child('world/health').set(newHealth);
+                        break;
+                    }
+                }
+            } else if (action === 'solar') {
+                const solarId = `solar_${gridX}_${gridY}`;
+                const exists = solarPanels.some(s => s.gridX === gridX && s.gridY === gridY);
+                if (!exists) {
+                    await gameRef.child('world/solar').child(solarId).set({
+                        x: gridX * TILE_SIZE + TILE_SIZE/2,
+                        y: gridY * TILE_SIZE + TILE_SIZE/2,
+                        gridX, gridY
+                    });
+                    
+                    player.solarDeployed++;
+                    player.impact += 8;
+                    await gameRef.child('players').child(playerId).update({
+                        solarDeployed: player.solarDeployed,
+                        impact: player.impact
+                    });
+                    
+                    const newHealth = Math.min(100, ecosystemHealth + 0.4);
+                    await gameRef.child('world/health').set(newHealth);
+                }
+            }
+        }
+        
         // Update game
         function update() {
             if (!player) return;
             
-            player.update();
+            const speed = 4;
+            if (keys['w'] || keys['W'] || keys['ArrowUp']) player.y -= speed;
+            if (keys['s'] || keys['S'] || keys['ArrowDown']) player.y += speed;
+            if (keys['a'] || keys['A'] || keys['ArrowLeft']) player.x -= speed;
+            if (keys['d'] || keys['D'] || keys['ArrowRight']) player.x += speed;
+            
+            player.x = Math.max(PLAYER_SIZE, Math.min(WORLD_SIZE - PLAYER_SIZE, player.x));
+            player.y = Math.max(PLAYER_SIZE, Math.min(WORLD_SIZE - PLAYER_SIZE, player.y));
             
             // Update camera
             camera.x = player.x - canvas.width / 2;
             camera.y = player.y - canvas.height / 2;
             camera.x = Math.max(0, Math.min(WORLD_SIZE - canvas.width, camera.x));
             camera.y = Math.max(0, Math.min(WORLD_SIZE - canvas.height, camera.y));
-            
-            // Update bots
-            for (let bot of bots) {
-                bot.update();
-            }
-            
-            // Grow trees
-            for (let tree of trees) {
-                if (tree.age < 100) tree.age++;
-            }
-            
-            // Update particles
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.x += p.vx;
-                p.y += p.vy;
-                p.life--;
-                if (p.life <= 0) particles.splice(i, 1);
-            }
-            
-            // Update ecosystem health
-            if (healthIncrease > 0) {
-                ecosystemHealth += Math.min(healthIncrease, 0.1);
-                healthIncrease -= 0.1;
-                if (ecosystemHealth > 100) ecosystemHealth = 100;
-            }
-            
-            // Pollution slowly spreads if health is low
-            if (ecosystemHealth < 50 && Math.random() < 0.001) {
-                const x = Math.random() * WORLD_SIZE;
-                const y = Math.random() * WORLD_SIZE;
-                pollution.push({ x, y });
-            }
             
             // Update UI
             document.getElementById('trees').textContent = player.treesPlanted;
@@ -786,28 +870,10 @@
             
             document.getElementById('healthFill').style.width = ecosystemHealth + '%';
             document.getElementById('healthText').textContent = Math.round(ecosystemHealth) + '%';
-            
-            updateLeaderboard();
-        }
-        
-        // Update leaderboard
-        function updateLeaderboard() {
-            const allGuardians = [player, ...bots].sort((a, b) => b.impact - a.impact).slice(0, 6);
-            const content = document.getElementById('leaderboardContent');
-            content.innerHTML = '';
-            
-            allGuardians.forEach((guardian, index) => {
-                const entry = document.createElement('div');
-                entry.className = 'leaderboard-entry' + (guardian.isPlayer ? ' player' : '');
-                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : (index + 1) + '.';
-                entry.innerHTML = `<span class="rank">${medal}</span> <span>${guardian.name}</span> <span>${guardian.impact}</span>`;
-                content.appendChild(entry);
-            });
         }
         
         // Draw game
         function draw() {
-            // Clear
             ctx.fillStyle = '#87ceeb';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
@@ -823,16 +889,6 @@
                     if (tile) {
                         ctx.fillStyle = TILE_COLORS[tile.type];
                         ctx.fillRect(
-                            x * TILE_SIZE - camera.x,
-                            y * TILE_SIZE - camera.y,
-                            TILE_SIZE,
-                            TILE_SIZE
-                        );
-                        
-                        // Grid lines
-                        ctx.strokeStyle = 'rgba(0,0,0,0.1)';
-                        ctx.lineWidth = 1;
-                        ctx.strokeRect(
                             x * TILE_SIZE - camera.x,
                             y * TILE_SIZE - camera.y,
                             TILE_SIZE,
@@ -855,63 +911,26 @@
             
             // Draw solar panels
             for (let s of solarPanels) {
-                ctx.save();
-                ctx.translate(s.x - camera.x, s.y - camera.y);
-                
-                // Panel
                 ctx.fillStyle = '#1e40af';
-                ctx.fillRect(-12, -8, 24, 16);
+                ctx.fillRect(s.x - camera.x - 12, s.y - camera.y - 8, 24, 16);
                 ctx.strokeStyle = '#fbbf24';
                 ctx.lineWidth = 2;
-                ctx.strokeRect(-12, -8, 24, 16);
-                
-                // Grid
-                ctx.strokeStyle = '#fbbf24';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(-12, 0);
-                ctx.lineTo(12, 0);
-                ctx.moveTo(0, -8);
-                ctx.lineTo(0, 8);
-                ctx.stroke();
-                
-                ctx.restore();
+                ctx.strokeRect(s.x - camera.x - 12, s.y - camera.y - 8, 24, 16);
             }
             
             // Draw trees
             for (let tree of trees) {
-                const scale = tree.age / 100;
-                ctx.save();
-                ctx.translate(tree.x - camera.x, tree.y - camera.y);
-                
-                // Trunk
                 ctx.fillStyle = '#6d4c41';
-                ctx.fillRect(-3 * scale, 0, 6 * scale, 15 * scale);
-                
-                // Leaves
+                ctx.fillRect(tree.x - camera.x - 3, tree.y - camera.y, 6, 15);
                 ctx.beginPath();
-                ctx.arc(0, -5 * scale, 12 * scale, 0, Math.PI * 2);
-                ctx.fillStyle = scale < 0.5 ? '#7cb342' : '#2e7d32';
+                ctx.arc(tree.x - camera.x, tree.y - camera.y - 5, 12, 0, Math.PI * 2);
+                ctx.fillStyle = '#2e7d32';
                 ctx.fill();
-                
-                ctx.restore();
             }
             
-            // Draw particles
-            for (let p of particles) {
-                ctx.globalAlpha = p.life / 30;
-                ctx.beginPath();
-                ctx.arc(p.x - camera.x, p.y - camera.y, 4, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.fill();
-                ctx.globalAlpha = 1;
-            }
-            
-            // Draw guardians
-            player.draw();
-            for (let bot of bots) {
-                bot.draw();
-            }
+            // Draw players
+            if (player) player.draw();
+            Object.values(connectedPlayers).forEach(p => p.draw());
         }
         
         // Game loop
@@ -927,19 +946,18 @@
         window.addEventListener('keydown', (e) => {
             keys[e.key] = true;
             
-            // Action shortcuts
             if (e.key === '1' || e.key === 't' || e.key === 'T') {
                 setAction('tree');
-                player.performAction('tree');
+                performAction('tree');
             } else if (e.key === '2' || e.key === 'c' || e.key === 'C') {
                 setAction('cleanup');
-                player.performAction('cleanup');
+                performAction('cleanup');
             } else if (e.key === '3' || e.key === 's' || e.key === 'S') {
                 setAction('solar');
-                player.performAction('solar');
+                performAction('solar');
             } else if (e.key === ' ') {
                 e.preventDefault();
-                player.performAction(currentAction);
+                performAction(currentAction);
             }
         });
         
