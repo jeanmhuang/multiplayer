@@ -604,7 +604,8 @@
                 <li>Plant trees to restore forests</li>
                 <li>Clean up pollution across the planet</li>
                 <li>Deploy solar panels for clean energy</li>
-                <li>Reach 100% Global Ecosystem Health together!</li>
+                <li>Increase ecosystem health from 25% to 100%!</li>
+                <li>Pollution spawns continuously - stay vigilant!</li>
             </ul>
         </div>
         
@@ -655,7 +656,7 @@
             <h2>🎮 How to Play Climate Champions</h2>
             
             <h3>🎯 Goal</h3>
-            <p>Work together with all players to reach <strong>100% Global Ecosystem Health!</strong></p>
+            <p>Work together with all players to increase ecosystem health from <strong>25%</strong> to <strong>100%!</strong></p>
             
             <h3>🕹️ Controls</h3>
             <ul>
@@ -669,19 +670,19 @@
             
             <h3>🌱 Actions</h3>
             <ul>
-                <li><strong>🌳 Plant Trees:</strong> Adds +5 health, +5 impact. Press again on tree to remove it!</li>
-                <li><strong>🧹 Clean Pollution:</strong> Removes pollution, +3 health, +3 impact</li>
+                <li><strong>🌳 Plant Trees:</strong> Adds +3 health, +5 impact. Press again on tree to remove it!</li>
+                <li><strong>🧹 Clean Pollution:</strong> Removes pollution, +4 health, +3 impact</li>
                 <li><strong>☀️ Deploy Solar:</strong> Clean energy, +0.4 health, +8 impact. Press again to remove panel!</li>
             </ul>
             
             <h3>💡 Tips</h3>
             <ul>
                 <li>All players share the same world in real-time!</li>
-                <li>Focus on cleaning pollution first - it hurts ecosystem health</li>
+                <li><strong>Focus on cleaning pollution first</strong> - it decreases health by -1.5% each spawn!</li>
                 <li>Solar panels can't be placed on water or where trees exist</li>
                 <li>Watch the leaderboard to see top contributors</li>
-                <li>Pollution now spawns continuously - keep the world clean!</li>
-                <li><strong>📚 Learn real climate facts</strong> in the bottom-right panel as you play!</li>
+                <li>Pollution spawns continuously - work together to keep ahead!</li>
+                <li><strong>📚 Learn real climate facts</strong> in the bottom-left panel as you play!</li>
             </ul>
             
             <button class="close-btn" onclick="hideInstructions()">Got It!</button>
@@ -1010,6 +1011,25 @@
             }
         }
         
+        // Initialize ecosystem health to starting value
+        async function initializeEcosystemHealth() {
+            console.log('💚 Checking ecosystem health...');
+            
+            const healthSnapshot = await gameRef.child('world/health').once('value');
+            const currentHealth = healthSnapshot.val();
+            
+            console.log('📊 Current health:', currentHealth);
+            
+            // If health is too high or doesn't exist, reset to challenging starting point
+            if (currentHealth === null || currentHealth > 50) {
+                console.log('🔄 Resetting ecosystem health to 25%...');
+                await gameRef.child('world/health').set(25);
+                console.log('✅ Ecosystem health initialized to 25%');
+            } else {
+                console.log('✅ Ecosystem health is at good level:', currentHealth + '%');
+            }
+        }
+        
         function getTile(x, y) {
             if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE) return null;
             return tiles[y * GRID_SIZE + x];
@@ -1106,8 +1126,8 @@
                                 gridY: gridY
                             });
                             
-                            // Decrease ecosystem health slightly
-                            const newHealth = Math.max(0, ecosystemHealth - 0.3);
+                            // Decrease ecosystem health more significantly
+                            const newHealth = Math.max(0, ecosystemHealth - 1.5);
                             await gameRef.child('world/health').set(newHealth);
                             
                             console.log('🏭 New pollution spawned at:', gridX, gridY);
@@ -1222,6 +1242,9 @@
                 
                 initWorld();
                 console.log('🌍 World initialized');
+                
+                // Initialize ecosystem health to starting value
+                await initializeEcosystemHealth();
                 
                 // Generate initial pollution if needed
                 await generateInitialPollution();
@@ -1463,7 +1486,7 @@
                     impact: player.impact
                 });
                 
-                const newHealth = Math.min(100, ecosystemHealth + 5);
+                const newHealth = Math.min(100, ecosystemHealth + 3);
                 await gameRef.child('world/health').set(newHealth);
                 
                 showStatus('🌳 Tree planted!', 'success');
@@ -1494,7 +1517,7 @@
                         impact: player.impact
                     });
                     
-                    const newHealth = Math.min(100, ecosystemHealth + 3);
+                    const newHealth = Math.min(100, ecosystemHealth + 4);
                     await gameRef.child('world/health').set(newHealth);
                     
                     showStatus('🧹 Pollution cleaned!', 'success');
