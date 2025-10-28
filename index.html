@@ -959,6 +959,57 @@
             }
         }
         
+        // Generate initial pollution
+        async function generateInitialPollution() {
+            console.log('🏭 Checking for initial pollution...');
+            
+            // Check if pollution already exists
+            const pollutionSnapshot = await gameRef.child('world/pollution').once('value');
+            const existingPollution = pollutionSnapshot.numChildren();
+            
+            console.log('📊 Existing pollution count:', existingPollution);
+            
+            // Only generate if there's very little pollution
+            if (existingPollution < 10) {
+                console.log('🏭 Generating initial pollution...');
+                const pollutionToAdd = 30 - existingPollution; // Start with 30 total
+                
+                for (let i = 0; i < pollutionToAdd; i++) {
+                    let attempts = 0;
+                    let validLocation = false;
+                    let gridX, gridY;
+                    
+                    while (!validLocation && attempts < 50) {
+                        gridX = Math.floor(Math.random() * GRID_SIZE);
+                        gridY = Math.floor(Math.random() * GRID_SIZE);
+                        
+                        const tile = getTile(gridX, gridY);
+                        if (tile && tile.type !== 'water' && tile.type !== 'polluted_water') {
+                            validLocation = true;
+                        }
+                        attempts++;
+                    }
+                    
+                    if (validLocation) {
+                        const pollutionId = `pollution_${gridX}_${gridY}_${Date.now()}_${Math.random()}`;
+                        const x = gridX * TILE_SIZE + TILE_SIZE / 2;
+                        const y = gridY * TILE_SIZE + TILE_SIZE / 2;
+                        
+                        await gameRef.child('world/pollution').child(pollutionId).set({
+                            x: x,
+                            y: y,
+                            gridX: gridX,
+                            gridY: gridY
+                        });
+                    }
+                }
+                
+                console.log('✅ Initial pollution generated!');
+            } else {
+                console.log('✅ Sufficient pollution already exists');
+            }
+        }
+        
         function getTile(x, y) {
             if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE) return null;
             return tiles[y * GRID_SIZE + x];
@@ -1002,10 +1053,20 @@
             console.log('🏭 Starting continuous pollution spawning...');
             
             pollutionSpawnTimer = setInterval(async () => {
-                if (!gameStarted || pollution.length >= MAX_POLLUTION) return;
+                if (!gameStarted) return;
                 
-                // Spawn 2-4 pollution pieces at a time
-                const spawnCount = Math.floor(Math.random() * 3) + 2;
+                // Spawn more pollution if below minimum
+                const currentPollution = pollution.length;
+                let spawnCount;
+                
+                if (currentPollution < MIN_POLLUTION) {
+                    spawnCount = Math.floor(Math.random() * 3) + 3; // Spawn 3-5 if too low
+                    console.log('⚠️ Low pollution! Spawning', spawnCount, 'pieces');
+                } else if (currentPollution >= MAX_POLLUTION) {
+                    return; // Don't spawn if at max
+                } else {
+                    spawnCount = Math.floor(Math.random() * 3) + 2; // Spawn 2-4 normally
+                }
                 
                 for (let i = 0; i < spawnCount && pollution.length < MAX_POLLUTION; i++) {
                     // Find a valid spawn location
@@ -1161,6 +1222,9 @@
                 
                 initWorld();
                 console.log('🌍 World initialized');
+                
+                // Generate initial pollution if needed
+                await generateInitialPollution();
                 
                 // Generate player ID
                 playerId = 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
